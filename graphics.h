@@ -6,8 +6,6 @@
 #include "conf.h"
 #include "game.h"
 
-// The number of colors
-#define COLORS 5
 // The length of the block side
 #define BLOCK_SIZE 20
 // The position of the grid
@@ -26,7 +24,8 @@ load_image(char *filename);
  * blocks.png image
  */
 typedef enum {
-    RED = 1, GREEN, CYAN, PURPLE, VIOLET
+    CYAN = 1, BLUE, ORANGE, YELLOW,
+    GREEN, PURPLE, RED
 } BLOCK_COLORS;
 
 void
@@ -35,11 +34,11 @@ draw_block(SDL_Rect *type, SDL_Surface *dest, int x, int y,
 
 void
 draw_grid(int grid[GRID_ROWS][GRID_COLS], SDL_Surface *dest,
-	  SDL_Surface *blocks, SDL_Rect *block_colors[COLORS]);
+	  SDL_Surface *blocks, SDL_Rect *block_colors[7]);
 
 void
 draw_a_blocks(active_blocks *a_blocks, SDL_Surface *dest,
-	      SDL_Surface *blocks, SDL_Rect *block_colors[COLORS]);
+	      SDL_Surface *blocks, SDL_Rect *block_colors[7]);
 void
 empty_grid(int *grid[GRID_ROWS]);
 

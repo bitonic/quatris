@@ -41,7 +41,7 @@ draw_block(SDL_Rect *color, SDL_Surface *dest, int x, int y,
 
 void
 draw_grid(int grid[GRID_ROWS][GRID_COLS], SDL_Surface *dest,
-	  SDL_Surface *blocks, SDL_Rect *block_colors[COLORS])
+	  SDL_Surface *blocks, SDL_Rect *block_colors[7])
 {
     int c, r;
     for (c = 0; c < GRID_COLS; c++)
@@ -60,7 +60,7 @@ draw_grid(int grid[GRID_ROWS][GRID_COLS], SDL_Surface *dest,
 
 void
 draw_a_blocks(active_blocks *a_blocks, SDL_Surface *dest,
-	      SDL_Surface *blocks, SDL_Rect *block_colors[COLORS])
+	      SDL_Surface *blocks, SDL_Rect *block_colors[7])
 {
     int i;
     for (i = 0; i < 4; i++)

@@ -112,14 +112,14 @@ generate_a_blocks(active_blocks *a_blocks)
 			  0, GRID_COLS / 2 - 1,
 			  1, GRID_COLS / 2 - 1,
 			  0, GRID_COLS / 2,
-			  4, a_blocks);
+			  5, a_blocks);
 	break;
     case Z:
 	set_active_blocks(0, GRID_COLS / 2 - 2,
 			  0, GRID_COLS / 2 - 1,
 			  1, GRID_COLS / 2 - 1,
 			  1, GRID_COLS / 2,
-			  4, a_blocks);
+			  6, a_blocks);
 	break;
     }
 }

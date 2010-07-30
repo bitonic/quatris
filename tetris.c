@@ -17,7 +17,7 @@ FPSmanager *fpsmanager = NULL;
 
 // Needed for graphics.c
 SDL_Surface *blocks_sprite = NULL; // It will hold the img with the blocks
-SDL_Rect *block_colors[COLORS]; // It will hold the various rects
+SDL_Rect *block_colors[7]; // It will hold the various rects
                                 // for the various colors
 int grid[GRID_ROWS][GRID_COLS]; // The actual grid
 
@@ -49,7 +49,7 @@ init()
     blocks_sprite = load_image("files/blocks.png"); // Load the sprite with the blocks
     // Loads the various rects into the blocks_types array
     int i;
-    for (i = 0; i < COLORS; i++)
+    for (i = 0; i < 7; i++)
     {
 	block_colors[i] = (SDL_Rect *) malloc(sizeof(SDL_Rect));
 	block_colors[i]->x = i * BLOCK_SIZE;
@@ -61,7 +61,7 @@ init()
     a_blocks = (active_blocks *) malloc(sizeof(active_blocks));
 
     // The interval in wich pieces fall
-    fall_interval = 1000;
+    fall_interval = 700;
 
     // Init the random number generator
     srand((unsigned) time(0));
@@ -89,12 +89,7 @@ main(int argv, char *argc[])
     if (!init())
 	return(1);
 
-    set_active_blocks(0, 3,
-		      0, 4,
-		      1, 4,
-		      1, 5,
-		      RED,
-		      a_blocks);
+    generate_a_blocks(a_blocks);
 
     // Start the timer
     fall_timer = SDL_GetTicks();
@@ -118,6 +113,12 @@ main(int argv, char *argc[])
 		    move_blocks(grid, a_blocks, RIGHT);
 		    break;
 		case SDLK_DOWN:
+		    /*
+		      The DOWN movement is different, since we want to keep
+		      going if the user keeps the down key pressed. So we
+		      set mov_down and we unset it when the user releases the
+		      key.
+		    */
 		    mov_down = 1;
 		    break;
 		default:
@@ -136,20 +137,23 @@ main(int argv, char *argc[])
 		break;
 	    }
 	}
-
-	if (SDL_Flip(screen) == -1)
-	    return(1);
  
+	// If the user is pressing the down key, move down
 	if (mov_down)
 	    move_blocks(grid, a_blocks, DOWN);
+	// Else, if enough time has passed, move down anyway
 	else if (SDL_GetTicks() - fall_timer > fall_interval)
 	{
+	    /*
+	      If we can move down, good, if we can't, generate new
+	      active blocks.
+	    */
 	    if (!move_blocks(grid, a_blocks, DOWN))
 	    {
 		blocks_on_grid(grid, a_blocks);
 		generate_a_blocks(a_blocks);
 	    }
-	    fall_timer = SDL_GetTicks();
+	    fall_timer = SDL_GetTicks(); // Reset timer
 	}
 
 	// Clears the screen
@@ -160,6 +164,10 @@ main(int argv, char *argc[])
 
 	// Display active blocks
 	draw_a_blocks(a_blocks, screen, blocks_sprite, block_colors);
+
+	// Display the screen
+	if (SDL_Flip(screen) == -1)
+	    return(1);
 
 	// Delay
 	SDL_framerateDelay(fpsmanager);
