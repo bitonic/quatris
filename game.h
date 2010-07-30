@@ -11,7 +11,7 @@ typedef struct {
 typedef struct {
     int color;
     block_pos pos[4];
-} active_blocks;
+} free_blocks;
 
 typedef enum {
     LEFT, RIGHT, UP, DOWN
@@ -23,19 +23,19 @@ set_active_blocks(int c1, int r1,
 		  int c3, int r3,
 		  int c4, int r4,
 		  int color,
-		  active_blocks *a_blocks);
+		  free_blocks *a_blocks);
 
 int
-move_blocks(int grid[][GRID_COLS], active_blocks *a_blocks, BLOCK_MOV mov);
+move_blocks(int grid[][GRID_COLS], free_blocks *a_blocks, BLOCK_MOV mov);
 
 typedef enum {
     I, J, L, O, S, T, Z
 } BLOCK_TYPES;
 
 void
-generate_a_blocks(active_blocks *a_blocks);
+generate_a_blocks(free_blocks *a_blocks);
 
 void
-blocks_on_grid(int grid[GRID_ROWS][GRID_COLS], active_blocks *a_blocks);
+blocks_on_grid(int grid[GRID_ROWS][GRID_COLS], free_blocks *a_blocks);
 
 #endif

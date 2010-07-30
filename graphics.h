@@ -37,7 +37,7 @@ draw_grid(int grid[GRID_ROWS][GRID_COLS], SDL_Surface *dest,
 	  SDL_Surface *blocks, SDL_Rect *block_colors[7]);
 
 void
-draw_a_blocks(active_blocks *a_blocks, SDL_Surface *dest,
+draw_a_blocks(free_blocks *a_blocks, SDL_Surface *dest,
 	      SDL_Surface *blocks, SDL_Rect *block_colors[7]);
 void
 empty_grid(int *grid[GRID_ROWS]);

@@ -22,7 +22,7 @@ SDL_Rect *block_colors[7]; // It will hold the various rects
 int grid[GRID_ROWS][GRID_COLS]; // The actual grid
 
 // The active blocks
-active_blocks *a_blocks = NULL;
+free_blocks *a_blocks = NULL;
 
 // The movement requested by the user
 int mov_left, mov_right, mov_down;
@@ -58,7 +58,7 @@ init()
 	block_colors[i]->h = BLOCK_SIZE;
     }
 
-    a_blocks = (active_blocks *) malloc(sizeof(active_blocks));
+    a_blocks = (free_blocks *) malloc(sizeof(free_blocks));
 
     // The interval in wich pieces fall
     fall_interval = 700;

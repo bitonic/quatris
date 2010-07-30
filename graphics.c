@@ -46,20 +46,15 @@ draw_grid(int grid[GRID_ROWS][GRID_COLS], SDL_Surface *dest,
     int c, r;
     for (c = 0; c < GRID_COLS; c++)
 	for (r = 0; r < GRID_ROWS; r++)
-	{
 	    if (grid[r][c])
-	    {
 		draw_block(block_colors[grid[r][c]-1], dest,
 			   GRID_POS_X + c * BLOCK_SIZE,
 			   GRID_POS_Y + r * BLOCK_SIZE,
 			   blocks);
-	    }
-	}
-    
 }
 
 void
-draw_a_blocks(active_blocks *a_blocks, SDL_Surface *dest,
+draw_a_blocks(free_blocks *a_blocks, SDL_Surface *dest,
 	      SDL_Surface *blocks, SDL_Rect *block_colors[7])
 {
     int i;

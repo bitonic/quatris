@@ -7,7 +7,7 @@ set_active_blocks(int r1, int c1,
 		  int r3, int c3,
 		  int r4, int c4,
 		  int color,
-		  active_blocks *a_blocks)
+		  free_blocks *a_blocks)
 {
     a_blocks->pos[0].col = c1;
     a_blocks->pos[0].row = r1;
@@ -21,7 +21,7 @@ set_active_blocks(int r1, int c1,
 }
 
 int
-move_blocks(int grid[GRID_ROWS][GRID_COLS], active_blocks *a_blocks, BLOCK_MOV mov)
+move_blocks(int grid[GRID_ROWS][GRID_COLS], free_blocks *a_blocks, BLOCK_MOV mov)
 {
     int i;
     /*
@@ -66,7 +66,7 @@ move_blocks(int grid[GRID_ROWS][GRID_COLS], active_blocks *a_blocks, BLOCK_MOV m
 }
 
 void
-generate_a_blocks(active_blocks *a_blocks)
+generate_a_blocks(free_blocks *a_blocks)
 {
     int new_block = rand() % 7;
 
@@ -125,7 +125,7 @@ generate_a_blocks(active_blocks *a_blocks)
 }
 
 void
-blocks_on_grid(int grid[GRID_ROWS][GRID_COLS], active_blocks *a_blocks)
+blocks_on_grid(int grid[GRID_ROWS][GRID_COLS], free_blocks *a_blocks)
 {
     int i;
     for (i = 0; i < 4; i++)
