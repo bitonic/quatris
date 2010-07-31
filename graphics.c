@@ -57,12 +57,14 @@ void
 draw_a_blocks(free_blocks *a_blocks, SDL_Surface *dest,
 	      SDL_Surface *blocks, SDL_Rect *block_colors[7])
 {
-    int i;
-    for (i = 0; i < 4; i++)
-	draw_block(block_colors[a_blocks->color - 1], dest,
-		   GRID_POS_X + a_blocks->pos[i].col * BLOCK_SIZE,
-		   GRID_POS_Y + a_blocks->pos[i].row * BLOCK_SIZE,
-		   blocks);
+    int r, c;
+    for (r = 0; r < a_blocks->rows; r++)
+	for (c = 0; c < a_blocks->cols; c++)
+	    if (a_blocks->bs[r][c])
+		draw_block(block_colors[a_blocks->bs[r][c] - 1], dest,
+			   GRID_POS_X + (a_blocks->pos.col + c) * BLOCK_SIZE,
+			   GRID_POS_Y + (a_blocks->pos.row + r) * BLOCK_SIZE,
+			   blocks);
 }
 
 void

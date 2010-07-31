@@ -25,7 +25,7 @@ int grid[GRID_ROWS][GRID_COLS]; // The actual grid
 free_blocks *a_blocks = NULL;
 
 // The movement requested by the user
-int mov_left, mov_right, mov_down;
+int mov_down;
 
 // The timer to time the falling of pieces
 Uint32 fall_timer;
@@ -59,6 +59,8 @@ init()
     }
 
     a_blocks = (free_blocks *) malloc(sizeof(free_blocks));
+    a_blocks->rows = 0;
+    a_blocks->cols = 0;
 
     // The interval in wich pieces fall
     fall_interval = 700;

@@ -9,21 +9,15 @@ typedef struct {
 } block_pos;
 
 typedef struct {
-    int color;
-    block_pos pos[4];
+    block_pos pos;
+    int rows;
+    int cols;
+    int bs[4][4];
 } free_blocks;
 
 typedef enum {
     LEFT, RIGHT, UP, DOWN
 } BLOCK_MOV;
-
-void
-set_active_blocks(int c1, int r1,
-		  int c2, int r2,
-		  int c3, int r3,
-		  int c4, int r4,
-		  int color,
-		  free_blocks *a_blocks);
 
 int
 move_blocks(int grid[][GRID_COLS], free_blocks *a_blocks, BLOCK_MOV mov);

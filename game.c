@@ -1,29 +1,10 @@
-#include <stdlib.h>
+#include <string.h>
 #include "game.h"
-
-void
-set_active_blocks(int r1, int c1,
-		  int r2, int c2,
-		  int r3, int c3,
-		  int r4, int c4,
-		  int color,
-		  free_blocks *a_blocks)
-{
-    a_blocks->pos[0].col = c1;
-    a_blocks->pos[0].row = r1;
-    a_blocks->pos[1].col = c2;
-    a_blocks->pos[1].row = r2;
-    a_blocks->pos[2].col = c3;
-    a_blocks->pos[2].row = r3;
-    a_blocks->pos[3].col = c4;
-    a_blocks->pos[3].row = r4;
-    a_blocks->color = color;
-}
 
 int
 move_blocks(int grid[GRID_ROWS][GRID_COLS], free_blocks *a_blocks, BLOCK_MOV mov)
 {
-    int i;
+    int r, c;
     /*
       Checks that the movement doesn't confict with anything,
       specifically is not out of the grid and it doesn't go over
@@ -33,31 +14,34 @@ move_blocks(int grid[GRID_ROWS][GRID_COLS], free_blocks *a_blocks, BLOCK_MOV mov
     switch(mov)
     {
     case LEFT:
-	for (i = 0; i < 4; i++)
-	    if ((a_blocks->pos[i].col < 1) ||
-		grid[a_blocks->pos[i].row][a_blocks->pos[i].col - 1])
-		return(0);
-	for (i = 0; i < 4; i++)
-	    a_blocks->pos[i].col--;
+	for (r = 0; r < a_blocks->rows; r++)
+	    for (c = 0; c < a_blocks->cols; c++)
+		if (a_blocks->bs[r][c] &&
+		    ((a_blocks->pos.col + c < 1) ||
+		     grid[a_blocks->pos.row + r][a_blocks->pos.col + c - 1]))
+		    return(0);
+	a_blocks->pos.col--;
 	break;
     case RIGHT:
-	for (i = 0; i < 4; i++)
-	    if ((a_blocks->pos[i].col >= GRID_COLS - 1) ||
-		grid[a_blocks->pos[i].row][a_blocks->pos[i].col + 1])
-		return(0);
-	for (i = 0; i < 4; i++)
-	    a_blocks->pos[i].col++;
+	for (r = 0; r < a_blocks->rows; r++)
+	    for (c = 0; c < a_blocks->cols; c++)
+		if (a_blocks->bs[r][c] &&
+		    ((a_blocks->pos.col + c >= GRID_COLS - 1) ||
+		     grid[a_blocks->pos.row + r][a_blocks->pos.col + c + 1]))
+		    return(0);
+	a_blocks->pos.col++;
 	break;
     case UP:
 	// Don't think I'll ever use that...
 	break;
     case DOWN:
-	for (i = 0; i < 4; i++)
-	    if ((a_blocks->pos[i].row >= GRID_ROWS - 1) ||
-		grid[a_blocks->pos[i].row + 1][a_blocks->pos[i].col])
-		return(0);
-	for (i = 0; i < 4; i++)
-	    a_blocks->pos[i].row++;
+	for (r = 0; r < a_blocks->rows; r++)
+	    for (c = 0; c < a_blocks->cols; c++)
+		if (a_blocks->bs[r][c] &&
+		    ((a_blocks->pos.row + r >= GRID_ROWS - 1) ||
+		     grid[a_blocks->pos.row + r + 1][a_blocks->pos.col + c]))
+		    return(0);
+	a_blocks->pos.row++;
 	break;
     default:
 	break;
@@ -68,58 +52,72 @@ move_blocks(int grid[GRID_ROWS][GRID_COLS], free_blocks *a_blocks, BLOCK_MOV mov
 void
 generate_a_blocks(free_blocks *a_blocks)
 {
-    int new_block = rand() % 7;
+    // Empty the array
+    memset(a_blocks->bs, 0, sizeof(a_blocks->bs));
 
+    int new_block = rand() % 7;
+    a_blocks->pos.row = 0;
+    a_blocks->pos.col = 3;
     switch(new_block)
     {
     case I:
-	set_active_blocks(0, GRID_COLS / 2 - 2,
-			  0, GRID_COLS / 2 - 1,
-			  0, GRID_COLS / 2,
-			  0, GRID_COLS / 2 + 1,
-			  1, a_blocks);
+	a_blocks->rows = 1;
+	a_blocks->cols = 4;
+	a_blocks->bs[0][0] = 1;
+	a_blocks->bs[0][1] = 1;
+	a_blocks->bs[0][2] = 1;
+	a_blocks->bs[0][3] = 1;
 	break;
     case J:
-	set_active_blocks(0, GRID_COLS / 2 - 2,
-			  0, GRID_COLS / 2 - 1,
-			  0, GRID_COLS / 2,
-			  1, GRID_COLS / 2,
-			  2, a_blocks);
+	a_blocks->rows = 2;
+	a_blocks->cols = 3;
+	a_blocks->bs[0][0] = 2;
+	a_blocks->bs[0][1] = 2;
+	a_blocks->bs[0][2] = 2;
+	a_blocks->bs[1][2] = 2;
 	break;
     case L:
-	set_active_blocks(1, GRID_COLS / 2 - 2,
-			  0, GRID_COLS / 2 - 2,
-			  0, GRID_COLS / 2 - 1,
-			  0, GRID_COLS / 2,
-			  3, a_blocks);
+	a_blocks->rows = 2;
+	a_blocks->cols = 3;
+	a_blocks->bs[0][0] = 3;
+	a_blocks->bs[1][0] = 3;
+	a_blocks->bs[0][1] = 3;
+	a_blocks->bs[0][2] = 3;
 	break;
     case O:
-	set_active_blocks(0, GRID_COLS / 2 - 1,
-			  1, GRID_COLS / 2 - 1,
-			  0, GRID_COLS / 2,
-			  1, GRID_COLS / 2,
-			  4, a_blocks);
+	a_blocks->pos.col = 4;
+	a_blocks->rows = 2;
+	a_blocks->cols = 2;
+	a_blocks->bs[0][0] = 4;
+	a_blocks->bs[0][1] = 4;
+	a_blocks->bs[1][0] = 4;
+	a_blocks->bs[1][1] = 4;
 	break;
     case S:
-	set_active_blocks(1, GRID_COLS / 2 - 2,
-			  1, GRID_COLS / 2 - 1,
-			  0, GRID_COLS / 2 - 1,
-			  0, GRID_COLS / 2,
-			  4, a_blocks);
+	a_blocks->rows = 2;
+	a_blocks->cols = 3;
+	a_blocks->bs[1][0] = 5;
+	a_blocks->bs[0][1] = 5;
+	a_blocks->bs[1][1] = 5;
+	a_blocks->bs[0][2] = 5;
 	break;
     case T:
-	set_active_blocks(0, GRID_COLS / 2 - 2,
-			  0, GRID_COLS / 2 - 1,
-			  1, GRID_COLS / 2 - 1,
-			  0, GRID_COLS / 2,
-			  5, a_blocks);
+	a_blocks->rows = 2;
+	a_blocks->cols = 3;
+	a_blocks->bs[0][0] = 6;
+	a_blocks->bs[0][1] = 6;
+	a_blocks->bs[1][1] = 6;
+	a_blocks->bs[0][2] = 6;
 	break;
     case Z:
-	set_active_blocks(0, GRID_COLS / 2 - 2,
-			  0, GRID_COLS / 2 - 1,
-			  1, GRID_COLS / 2 - 1,
-			  1, GRID_COLS / 2,
-			  6, a_blocks);
+	a_blocks->rows = 2;
+	a_blocks->cols = 3;
+	a_blocks->bs[0][0] = 7;
+	a_blocks->bs[0][1] = 7;
+	a_blocks->bs[1][1] = 7;
+	a_blocks->bs[1][2] = 7;
+	break;
+    default:
 	break;
     }
 }
@@ -127,7 +125,9 @@ generate_a_blocks(free_blocks *a_blocks)
 void
 blocks_on_grid(int grid[GRID_ROWS][GRID_COLS], free_blocks *a_blocks)
 {
-    int i;
-    for (i = 0; i < 4; i++)
-	grid[a_blocks->pos[i].row][a_blocks->pos[i].col] = a_blocks->color;
+    int c, r;
+    for (r = 0; r < a_blocks->rows; r++)
+	for (c = 0; c < a_blocks->cols; c++)
+	    if (a_blocks->bs[r][c])
+		grid[a_blocks->pos.row + r][a_blocks->pos.col + c] = a_blocks->bs[r][c];
 }
