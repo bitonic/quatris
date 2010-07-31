@@ -146,22 +146,24 @@ main(int argv, char *argc[])
 	    }
 	}
  
-	// If the user is pressing the down key, move down
-	if (mov_down)
-	    move_blocks(grid, a_blocks, DOWN);
-	// Else, if enough time has passed, move down anyway
-	else if (SDL_GetTicks() - fall_timer > fall_interval)
+	/*
+	  If the user is pressing the down key, or if
+	  enough time has passed, move the pieces down.
+	*/
+	int enough_time;
+	if (mov_down || (enough_time = (SDL_GetTicks() - fall_timer > fall_interval)))
 	{
 	    /*
 	      If we can move down, good, if we can't, generate new
 	      active blocks.
 	    */
-	    if (!move_blocks(grid, a_blocks, DOWN))
+	    if (!move_blocks(grid, a_blocks, DOWN) && enough_time)
 	    {
 		blocks_on_grid(grid, a_blocks);
 		generate_a_blocks(a_blocks);
 	    }
-	    fall_timer = SDL_GetTicks(); // Reset timer
+	    if (enough_time)
+		fall_timer = SDL_GetTicks(); // Reset timer
 	}
 
 	// Clears the screen
