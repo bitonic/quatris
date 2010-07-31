@@ -1,4 +1,5 @@
 #include <string.h>
+#include <stdlib.h>
 #include "game.h"
 
 int
@@ -8,7 +9,7 @@ move_blocks(int grid[GRID_ROWS][GRID_COLS], free_blocks *a_blocks, BLOCK_MOV mov
     /*
       Checks that the movement doesn't confict with anything,
       specifically is not out of the grid and it doesn't go over
-      another block in the grid that we are not moving.
+      another block in the grid.
     */
 
     switch(mov)
@@ -16,8 +17,9 @@ move_blocks(int grid[GRID_ROWS][GRID_COLS], free_blocks *a_blocks, BLOCK_MOV mov
     case LEFT:
 	for (r = 0; r < a_blocks->rows; r++)
 	    for (c = 0; c < a_blocks->cols; c++)
-		if (a_blocks->bs[r][c] &&
-		    ((a_blocks->pos.col + c < 1) ||
+		if (a_blocks->bs[r][c] && // If there is a block, check
+		    ((a_blocks->pos.col + c < 1) || // That the block is in the grid
+		     // And that the block at the left in the grid is empty.
 		     grid[a_blocks->pos.row + r][a_blocks->pos.col + c - 1]))
 		    return(0);
 	a_blocks->pos.col--;
@@ -130,4 +132,28 @@ blocks_on_grid(int grid[GRID_ROWS][GRID_COLS], free_blocks *a_blocks)
 	for (c = 0; c < a_blocks->cols; c++)
 	    if (a_blocks->bs[r][c])
 		grid[a_blocks->pos.row + r][a_blocks->pos.col + c] = a_blocks->bs[r][c];
+}
+
+int
+rotate_blocks(int grid[GRID_ROWS][GRID_COLS], free_blocks *a_blocks, int clockwise)
+{
+    free_blocks *new_blocks = (free_blocks *) malloc(sizeof(free_blocks));
+    
+    new_blocks->cols = a_blocks->rows;
+    new_blocks->rows = a_blocks->cols;
+    new_blocks->pos.row = a_blocks->pos.row;
+    new_blocks->pos.col = a_blocks->pos.col + ((a_blocks->cols - a_blocks->rows) / 2);
+
+    int r, c;
+    for (r = 0; r < a_blocks->rows; r++)
+	for (c = 0; c < a_blocks->cols; c++)
+	    if (clockwise)
+		new_blocks->bs[c][new_blocks->cols - 1 - r] = a_blocks->bs[r][c];
+	    else
+		new_blocks->bs[new_blocks->rows - 1 - c][r] = a_blocks->bs[r][c];
+
+    memcpy(a_blocks, new_blocks, sizeof(free_blocks));
+    free(new_blocks);
+
+    return(1);
 }

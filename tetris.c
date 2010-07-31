@@ -123,6 +123,12 @@ main(int argv, char *argc[])
 		    */
 		    mov_down = 1;
 		    break;
+		case SDLK_UP:
+		    rotate_blocks(grid, a_blocks, 1);
+		    break;
+		case SDLK_SPACE:
+		    rotate_blocks(grid, a_blocks, 0);
+		    break;
 		default:
 		    break;
 		}
