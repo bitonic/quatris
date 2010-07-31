@@ -1,7 +1,19 @@
+SDL_LIBS = sdl SDL_gfx SDL_image
+CC_FLAGS = $(shell pkg-config --cflags $(SDL_LIBS)) -Wall -O2
+LD_FLAGS = $(shell pkg-config --libs $(SDL_LIBS))
+
+SOURCES = $(wildcard *.c)
+OBJECTS = $(patsubst %.c, %.o, $(SOURCES))
+
 all: tetris
 
-tetris: tetris.c graphics.c
-	gcc -o tetris tetris.c graphics.c game.c -lSDL -lSDL_gfx -lSDL_image
+tetris: $(OBJECTS)
+	gcc $(LD_FLAGS) -o $@ $?
+
+%.o: %.c
+	gcc -c $(CC_FLAGS) $<
 
 clean:
-	rm tetris
+	rm -f tetris
+	rm -f *.o
+
