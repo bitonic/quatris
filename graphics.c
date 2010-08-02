@@ -1,4 +1,5 @@
 #include <string.h>
+#include "SDL/SDL_gfxPrimitives.h"
 #include "graphics.h"
 
 void
@@ -68,7 +69,7 @@ draw_a_blocks(free_blocks *a_blocks, SDL_Surface *dest,
 }
 
 void
-empty_grid(int **grid)
+empty_grid(int grid[GRID_ROWS][GRID_COLS])
 {
     int i;
     for (i = 0; i < GRID_ROWS; i++)

@@ -96,6 +96,7 @@ main(int argv, char *argc[])
     // Start the timer
     fall_timer = SDL_GetTicks();
 
+    int enough_time;
     while(!quit)
     {
 	while (SDL_PollEvent(&event))
@@ -150,8 +151,8 @@ main(int argv, char *argc[])
 	  If the user is pressing the down key, or if
 	  enough time has passed, move the pieces down.
 	*/
-	int enough_time;
-	if (mov_down || (enough_time = (SDL_GetTicks() - fall_timer > fall_interval)))
+	enough_time = SDL_GetTicks() - fall_timer > fall_interval;
+	if (enough_time || mov_down)
 	{
 	    /*
 	      If we can move down, good, if we can't, generate new
