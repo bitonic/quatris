@@ -59,7 +59,6 @@ generate_a_blocks(free_blocks *a_blocks)
 
     int new_block = rand() % 7;
     a_blocks->pos.row = 0;
-    a_blocks->pos.col = 3;
     switch(new_block)
     {
     case I:
@@ -122,6 +121,7 @@ generate_a_blocks(free_blocks *a_blocks)
     default:
 	break;
     }
+    a_blocks->pos.col = GRID_COLS / 2 - a_blocks->cols / 2;
 }
 
 void

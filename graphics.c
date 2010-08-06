@@ -44,6 +44,10 @@ void
 draw_grid(int grid[GRID_ROWS][GRID_COLS], SDL_Surface *dest,
 	  SDL_Surface *blocks, SDL_Rect *block_colors[7])
 {
+    boxColor(dest, GRID_POS_X, GRID_POS_Y,
+	     GRID_POS_X + GRID_COLS * BLOCK_SIZE,
+	     GRID_POS_Y + GRID_ROWS * BLOCK_SIZE,
+	     0x080808FF);
     int c, r;
     for (c = 0; c < GRID_COLS; c++)
 	for (r = 0; r < GRID_ROWS; r++)
