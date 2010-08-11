@@ -161,28 +161,14 @@ main(int argv, char *argc[])
 	    if (!move_blocks(grid, a_blocks, DOWN) && enough_time)
 	    {
 		blocks_on_grid(grid, a_blocks);
+		update_grid(grid, screen, blocks_sprite, block_colors, fpsmanager);
 		generate_a_blocks(a_blocks);
 	    }
 	    if (enough_time)
 		fall_timer = SDL_GetTicks(); // Reset timer
 	}
 
-	// Clears the screen
-        SDL_FillRect(screen, &screen->clip_rect, SDL_MapRGB(screen->format, 0, 0, 0));
-
-	// Display the grid
-	draw_grid(grid, screen, blocks_sprite, block_colors);
-
-	// Display active blocks
-	draw_a_blocks(a_blocks, screen, blocks_sprite, block_colors);
-
-	// Display the screen
-	if (SDL_Flip(screen) == -1)
-	    return(1);
-
-	// Delay
-	SDL_framerateDelay(fpsmanager);
-
+	draw_game(grid, a_blocks, screen, blocks_sprite, block_colors, fpsmanager);
     }
 
     clean_up();

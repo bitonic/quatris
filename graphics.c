@@ -79,3 +79,30 @@ empty_grid(int grid[GRID_ROWS][GRID_COLS])
     for (i = 0; i < GRID_ROWS; i++)
 	memset(grid + i, 0, GRID_COLS);
 }
+
+int
+draw_game(int grid[GRID_ROWS][GRID_COLS], free_blocks *a_blocks,
+	  SDL_Surface *screen, SDL_Surface *blocks_sprite,
+	  SDL_Rect *block_colors[7], FPSmanager *fpsmanager)
+{
+    	// Clears the screen
+        SDL_FillRect(screen, &screen->clip_rect, SDL_MapRGB(screen->format, 0, 0, 0));
+
+	// Display the grid
+	draw_grid(grid, screen, blocks_sprite, block_colors);
+
+	if (a_blocks)
+	{
+	    // Display active blocks
+	    draw_a_blocks(a_blocks, screen, blocks_sprite, block_colors);
+	}
+
+	// Display the screen
+	if (SDL_Flip(screen) == -1)
+	    return(1);
+
+	// Delay
+	SDL_framerateDelay(fpsmanager);
+	
+	return(0);
+}

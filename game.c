@@ -1,6 +1,11 @@
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
+#include "SDL/SDL.h"
+#include "SDL/SDL_image.h"
+#include "SDL/SDL_framerate.h"
 #include "game.h"
+#include "graphics.h"
 
 int
 move_blocks(int grid[GRID_ROWS][GRID_COLS], free_blocks *a_blocks, BLOCK_MOV mov)
@@ -176,4 +181,66 @@ rotate_blocks(int grid[GRID_ROWS][GRID_COLS], free_blocks *a_blocks, int clockwi
     free(new_blocks);
 
     return(1);
+}
+
+int
+update_grid(int grid[GRID_ROWS][GRID_COLS], SDL_Surface *dest,
+	    SDL_Surface *blocks, SDL_Rect *block_colors[7],
+	    FPSmanager *fpsmanager)
+{
+    Uint32 timer, interval;
+    int cleared_rows[4], cleared_row, counter, grid_changed;
+    int new_grid[GRID_ROWS][GRID_COLS];
+
+    memcpy(new_grid, grid, sizeof(new_grid));
+
+    int r, c;
+
+    counter = 0; grid_changed = 0;
+    // Set the grid rows to 0
+    for (r = 0; r < GRID_ROWS; r++)
+    {
+	cleared_row = 1;
+	for (c = 0; c < GRID_COLS; c++)
+	    if (!new_grid[r][c])
+	    {
+		cleared_row = 0;
+		break;
+	    }
+
+	if (cleared_row)
+	{
+	    grid_changed = 1;
+	    cleared_rows[counter] = r;
+	    counter++;
+	    memset(new_grid[r], 0, sizeof(new_grid[r]));
+	}
+    }
+
+    if (grid_changed)
+    {
+	// Animate
+	timer = SDL_GetTicks();
+	interval = 200;
+	while (SDL_GetTicks() - timer < interval)
+	    draw_game(new_grid, NULL, dest, blocks, block_colors, fpsmanager);
+	timer = SDL_GetTicks();
+	while (SDL_GetTicks() - timer < interval)
+	    draw_game(grid, NULL, dest, blocks, block_colors, fpsmanager);
+	timer = SDL_GetTicks();
+	while (SDL_GetTicks() - timer < interval)
+	    draw_game(new_grid, NULL, dest, blocks, block_colors, fpsmanager);
+
+	// Remove cleared rows
+	int i;
+	for (i = 0; i < counter; i++)
+	{
+	    for (r = cleared_rows[i]; r > 0; r--)
+		memcpy(grid[r], grid[r - 1], sizeof(grid[0]));
+
+	    memset(grid[0], 0, sizeof(grid[0]));
+	}
+    }
+
+    return(0);
 }
