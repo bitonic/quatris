@@ -83,7 +83,7 @@ empty_grid(int grid[GRID_ROWS][GRID_COLS])
 int
 draw_game(int grid[GRID_ROWS][GRID_COLS], free_blocks *a_blocks,
 	  SDL_Surface *screen, SDL_Surface *blocks_sprite,
-	  SDL_Rect *block_colors[7], FPSmanager *fpsmanager)
+	  SDL_Rect *block_colors[7])
 {
     	// Clears the screen
         SDL_FillRect(screen, &screen->clip_rect, SDL_MapRGB(screen->format, 0, 0, 0));
@@ -99,10 +99,7 @@ draw_game(int grid[GRID_ROWS][GRID_COLS], free_blocks *a_blocks,
 
 	// Display the screen
 	if (SDL_Flip(screen) == -1)
-	    return(1);
+	    return(0);
 
-	// Delay
-	SDL_framerateDelay(fpsmanager);
-	
-	return(0);
+	return(1);
 }

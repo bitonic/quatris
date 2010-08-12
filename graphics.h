@@ -3,7 +3,6 @@
 
 #include "SDL/SDL.h"
 #include "SDL/SDL_image.h"
-#include "SDL/SDL_framerate.h"
 #include "conf.h"
 #include "blocks.h"
 
@@ -47,6 +46,6 @@ empty_grid(int grid[GRID_ROWS][GRID_COLS]);
 int
 draw_game(int grid[GRID_ROWS][GRID_COLS], free_blocks *a_blocks,
 	  SDL_Surface *screen, SDL_Surface *blocks_sprite,
-	  SDL_Rect *blocks_colors[7], FPSmanager *fpsmanager);
+	  SDL_Rect *blocks_colors[7]);
 
 #endif

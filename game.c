@@ -1,9 +1,6 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include "SDL/SDL.h"
-#include "SDL/SDL_image.h"
-#include "SDL/SDL_framerate.h"
 #include "game.h"
 #include "graphics.h"
 
@@ -91,7 +88,6 @@ generate_a_blocks(free_blocks *a_blocks)
 	a_blocks->bs[0][2] = 3;
 	break;
     case O:
-	a_blocks->pos.col = 4;
 	a_blocks->rows = 2;
 	a_blocks->cols = 2;
 	a_blocks->bs[0][0] = 4;
@@ -223,13 +219,22 @@ update_grid(int grid[GRID_ROWS][GRID_COLS], SDL_Surface *dest,
 	timer = SDL_GetTicks();
 	interval = 200;
 	while (SDL_GetTicks() - timer < interval)
-	    draw_game(new_grid, NULL, dest, blocks, block_colors, fpsmanager);
+	{	    
+	    draw_game(new_grid, NULL, dest, blocks, block_colors);
+	    SDL_framerateDelay(fpsmanager);
+	}
 	timer = SDL_GetTicks();
 	while (SDL_GetTicks() - timer < interval)
-	    draw_game(grid, NULL, dest, blocks, block_colors, fpsmanager);
+	{
+	    draw_game(grid, NULL, dest, blocks, block_colors);
+	    SDL_framerateDelay(fpsmanager);
+	}
 	timer = SDL_GetTicks();
 	while (SDL_GetTicks() - timer < interval)
-	    draw_game(new_grid, NULL, dest, blocks, block_colors, fpsmanager);
+	{
+	    draw_game(new_grid, NULL, dest, blocks, block_colors);
+	    SDL_framerateDelay(fpsmanager);
+	}
 
 	// Remove cleared rows
 	int i;
@@ -243,4 +248,116 @@ update_grid(int grid[GRID_ROWS][GRID_COLS], SDL_Surface *dest,
     }
 
     return(0);
+}
+
+int
+game_playing(GAME_STATE *game_state,
+	     SDL_Surface *screen,
+	     SDL_Surface *blocks_sprite,
+	     SDL_Rect *block_colors[7],
+	     SDL_Event event,
+	     int grid[GRID_ROWS][GRID_COLS],
+	     free_blocks *a_blocks,
+	     Uint32 *fall_timer,
+	     Uint32 *fall_interval,
+	     int *mov_down,
+	     FPSmanager *fpsmanager)
+{
+    while (SDL_PollEvent(&event))
+    {
+	switch (event.type)
+	{
+	case SDL_QUIT:
+	    *game_state = QUIT;
+	    break;
+	case SDL_KEYDOWN:
+	    switch (event.key.keysym.sym)
+	    {
+	    case SDLK_LEFT:
+		move_blocks(grid, a_blocks, LEFT);
+		break;
+	    case SDLK_RIGHT:
+		move_blocks(grid, a_blocks, RIGHT);
+		break;
+	    case SDLK_DOWN:
+		/*
+		  The DOWN movement is different, since we want to keep
+		  going if the user keeps the down key pressed. So we
+		  set mov_down and we unset it when the user releases the
+		  key.
+		*/
+		*mov_down = 1;
+		break;
+	    case SDLK_UP:
+		rotate_blocks(grid, a_blocks, 1);
+		break;
+	    case SDLK_SPACE:
+		rotate_blocks(grid, a_blocks, 0);
+		break;
+	    case SDLK_p:
+		*game_state = PAUSED;
+		break;
+	    default:
+		break;
+	    }
+	    break;
+	case SDL_KEYUP:
+	    switch (event.key.keysym.sym)
+	    {
+	    case SDLK_DOWN:
+		*mov_down = 0;
+		break;
+	    default:
+		break;
+	    }
+	    break;
+	}
+    }
+
+    /*
+      If the user is pressing the down key, or if
+      enough time has passed, move the pieces down.
+    */
+    int enough_time = SDL_GetTicks() - *fall_timer > *fall_interval;
+    if (enough_time || *mov_down)
+    {
+	/*
+	  If we can move down, good, if we can't, generate new
+	  active blocks.
+	*/
+	if (!move_blocks(grid, a_blocks, DOWN) && enough_time)
+	{
+	    blocks_on_grid(grid, a_blocks);
+	    update_grid(grid, screen, blocks_sprite, block_colors, fpsmanager);
+	    generate_a_blocks(a_blocks);
+	}
+	if (enough_time)
+	    *fall_timer = SDL_GetTicks(); // Reset timer
+    }
+
+    if (!draw_game(grid, a_blocks, screen, blocks_sprite, block_colors))
+	return(0);
+
+    return(1);
+}
+
+int
+game_paused(GAME_STATE *game_state,
+	    SDL_Surface *screen,
+	    SDL_Event event)
+{
+    while (SDL_PollEvent(&event))
+    {
+	switch (event.type)
+	{
+	case SDL_QUIT:
+	    *game_state = QUIT;
+	    break;
+	case SDL_KEYDOWN:
+	    if (event.key.keysym.sym == SDLK_p)
+		*game_state = PLAYING;
+	}
+    }
+
+    return(1);
 }

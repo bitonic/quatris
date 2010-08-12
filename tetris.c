@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include "SDL/SDL.h"
+#include "SDL/SDL_ttf"
 #include "SDL/SDL_framerate.h"
 #include "conf.h"
 #include "game.h"
@@ -15,6 +16,9 @@ SDL_Event event;
 // The fps manager
 FPSmanager *fpsmanager = NULL;
 
+// The game state
+GAME_STATE game_state = SPLASHSCREEN;
+
 // Needed for graphics.c
 SDL_Surface *blocks_sprite = NULL; // It will hold the img with the blocks
 SDL_Rect *block_colors[7]; // It will hold the various rects
@@ -24,12 +28,11 @@ int grid[GRID_ROWS][GRID_COLS]; // The actual grid
 // The active blocks
 free_blocks *a_blocks = NULL;
 
-// The movement requested by the user
-int mov_down;
-
 // The timer to time the falling of pieces
 Uint32 fall_timer;
 Uint32 fall_interval;
+
+int mov_down;
 
 int
 init()
@@ -47,6 +50,7 @@ init()
 
     // Init the graphics
     blocks_sprite = load_image("files/blocks.png"); // Load the sprite with the blocks
+
     // Loads the various rects into the blocks_types array
     int i;
     for (i = 0; i < 7; i++)
@@ -86,89 +90,66 @@ clean_up()
 int
 main(int argv, char *argc[])
 {
-    int quit = 0;
-
     if (!init())
 	return(1);
 
-    generate_a_blocks(a_blocks);
-
-    // Start the timer
-    fall_timer = SDL_GetTicks();
-
-    int enough_time;
-    while(!quit)
+    // Display the splash screen
+    while (game_state == SPLASHSCREEN)
     {
 	while (SDL_PollEvent(&event))
 	{
 	    switch (event.type)
 	    {
 	    case SDL_QUIT:
-		quit = 1;
-		break;
+		return(0);
 	    case SDL_KEYDOWN:
-		switch (event.key.keysym.sym)
-		{
-		case SDLK_LEFT:
-		    move_blocks(grid, a_blocks, LEFT);
-		    break;
-		case SDLK_RIGHT:
-		    move_blocks(grid, a_blocks, RIGHT);
-		    break;
-		case SDLK_DOWN:
-		    /*
-		      The DOWN movement is different, since we want to keep
-		      going if the user keeps the down key pressed. So we
-		      set mov_down and we unset it when the user releases the
-		      key.
-		    */
-		    mov_down = 1;
-		    break;
-		case SDLK_UP:
-		    rotate_blocks(grid, a_blocks, 1);
-		    break;
-		case SDLK_SPACE:
-		    rotate_blocks(grid, a_blocks, 0);
-		    break;
-		default:
-		    break;
-		}
+		game_state = PLAYING;
 		break;
-	    case SDL_KEYUP:
-		switch (event.key.keysym.sym)
-		{
-		case SDLK_DOWN:
-		    mov_down = 0;
-		    break;
-		default:
-		    break;
-		}
+	    default:
 		break;
 	    }
-	}
- 
-	/*
-	  If the user is pressing the down key, or if
-	  enough time has passed, move the pieces down.
-	*/
-	enough_time = SDL_GetTicks() - fall_timer > fall_interval;
-	if (enough_time || mov_down)
-	{
-	    /*
-	      If we can move down, good, if we can't, generate new
-	      active blocks.
-	    */
-	    if (!move_blocks(grid, a_blocks, DOWN) && enough_time)
-	    {
-		blocks_on_grid(grid, a_blocks);
-		update_grid(grid, screen, blocks_sprite, block_colors, fpsmanager);
-		generate_a_blocks(a_blocks);
-	    }
-	    if (enough_time)
-		fall_timer = SDL_GetTicks(); // Reset timer
 	}
 
-	draw_game(grid, a_blocks, screen, blocks_sprite, block_colors, fpsmanager);
+	SDL_framerateDelay(fpsmanager);
+    }
+
+    generate_a_blocks(a_blocks);
+
+    // Start the timer
+    fall_timer = SDL_GetTicks();
+
+    // Set the down movement to 0
+    mov_down = 0;
+
+    while(game_state != QUIT)
+    {
+	switch (game_state)
+	{
+	case PLAYING:
+	    if (!game_playing(&game_state,
+			      screen,
+			      blocks_sprite,
+			      block_colors,
+			      event,
+			      grid,
+			      a_blocks,
+			      &fall_timer,
+			      &fall_interval,
+			      &mov_down,
+			      fpsmanager))
+		return(1);
+	    break;
+	case PAUSED:
+	    if (!game_paused(&game_state,
+			     screen,
+			     event))
+		return(1);
+	    break;
+	default:
+	    break;
+	}
+
+	SDL_framerateDelay(fpsmanager);
     }
 
     clean_up();
