@@ -1,4 +1,4 @@
-SDL_LIBS = sdl SDL_gfx SDL_image
+SDL_LIBS = sdl SDL_gfx SDL_image SDL_ttf
 CC_FLAGS = $(shell pkg-config --cflags $(SDL_LIBS)) -Wall -O2
 LD_FLAGS = $(shell pkg-config --libs $(SDL_LIBS))
 

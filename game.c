@@ -188,9 +188,7 @@ rotate_blocks(int grid[GRID_ROWS][GRID_COLS],
 
 int
 update_grid(int grid[GRID_ROWS][GRID_COLS],
-	    SDL_Surface *dest,
-	    SDL_Surface *blocks,
-	    SDL_Rect *block_colors[7],
+	    free_blocks *next_a_blocks,
 	    FPSmanager *fpsmanager)
 {
     Uint32 timer, interval;
@@ -239,19 +237,19 @@ update_grid(int grid[GRID_ROWS][GRID_COLS],
 	// grid with the rows filled with 0s
 	while (SDL_GetTicks() - timer < interval)
 	{	    
-	    draw_game_playing(new_grid, NULL, NULL, dest, blocks, block_colors);
+	    draw_game_playing(new_grid, NULL, next_a_blocks);
 	    SDL_framerateDelay(fpsmanager);
 	}
 	timer = SDL_GetTicks();
 	while (SDL_GetTicks() - timer < interval)
 	{
-	    draw_game_playing(grid, NULL, NULL, dest, blocks, block_colors);
+	    draw_game_playing(grid, NULL, next_a_blocks);
 	    SDL_framerateDelay(fpsmanager);
 	}
 	timer = SDL_GetTicks();
 	while (SDL_GetTicks() - timer < interval)
 	{
-	    draw_game_playing(new_grid, NULL, NULL, dest, blocks, block_colors);
+	    draw_game_playing(new_grid, NULL, next_a_blocks);
 	    SDL_framerateDelay(fpsmanager);
 	}
 
@@ -273,9 +271,6 @@ update_grid(int grid[GRID_ROWS][GRID_COLS],
 
 int
 game_playing(GAME_STATE *game_state,
-	     SDL_Surface *screen,
-	     SDL_Surface *blocks_sprite,
-	     SDL_Rect *block_colors[7],
 	     SDL_Event event,
 	     int grid[GRID_ROWS][GRID_COLS],
 	     free_blocks *a_blocks,
@@ -350,7 +345,7 @@ game_playing(GAME_STATE *game_state,
 	if (!move_blocks(grid, a_blocks, DOWN) && enough_time)
 	{
 	    blocks_on_grid(grid, a_blocks);
-	    update_grid(grid, screen, blocks_sprite, block_colors, fpsmanager);
+	    update_grid(grid, next_a_blocks, fpsmanager);
 	    // Copy the blocks planned to the active blocks
 	    copy_free_blocks(a_blocks, next_a_blocks);
 	    // Set the right column
@@ -362,7 +357,7 @@ game_playing(GAME_STATE *game_state,
 	    *fall_timer = SDL_GetTicks(); // Reset timer
     }
 
-    if (!draw_game_playing(grid, a_blocks, next_a_blocks, screen, blocks_sprite, block_colors))
+    if (!draw_game_playing(grid, a_blocks, next_a_blocks))
 	return(0);
 
     return(1);
@@ -370,7 +365,6 @@ game_playing(GAME_STATE *game_state,
 
 int
 game_paused(GAME_STATE *game_state,
-	    SDL_Surface *screen,
 	    SDL_Event event)
 {
     while (SDL_PollEvent(&event))
@@ -385,6 +379,9 @@ game_paused(GAME_STATE *game_state,
 		*game_state = PLAYING;
 	}
     }
+
+    if (!draw_game_paused())
+	return(0);
 
     return(1);
 }

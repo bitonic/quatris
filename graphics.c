@@ -2,6 +2,17 @@
 #include "SDL/SDL_gfxPrimitives.h"
 #include "graphics.h"
 
+SDL_Color bgr_color = {0, 0, 0};
+
+SDL_Surface *blocks_sprite = NULL; // It will hold the img with the blocks
+SDL_Rect *block_colors[7]; // It will hold the various rects
+                                // for the various colors
+
+// Fonts
+TTF_Font *inconsolata15;
+TTF_Font *inconsolata28;
+SDL_Color font_color_white = {255, 255, 255};
+
 void
 apply_surface(SDL_Surface *source,
 	      SDL_Rect *clip,
@@ -36,21 +47,53 @@ load_image(char *filename)
     return(optimizedImage);
 }
 
+int
+init_graphics()
+{
+    blocks_sprite = load_image("files/blocks.png"); // Load the sprite with the blocks
+
+    // Loads the various rects into the blocks_types array
+    int i;
+    for (i = 0; i < 7; i++)
+    {
+	block_colors[i] = (SDL_Rect *) malloc(sizeof(SDL_Rect));
+	block_colors[i]->x = i * BLOCK_SIZE;
+	block_colors[i]->y = 0;
+	block_colors[i]->w = BLOCK_SIZE;
+	block_colors[i]->h = BLOCK_SIZE;
+    }
+
+    // Init fonts
+
+    inconsolata15 = TTF_OpenFont("files/Inconsolata.ttf", 15);
+    if(!inconsolata15)
+    {
+	printf("Error inTTF_OpenFont: %s\n", TTF_GetError());
+	return(0);
+    }
+
+    inconsolata28 = TTF_OpenFont("files/Inconsolata.ttf", 28);
+    if(!inconsolata28)
+    {
+	printf("Error inTTF_OpenFont: %s\n", TTF_GetError());
+	return(0);
+    }
+    
+    return(1);
+}
+
 void
 draw_block(SDL_Rect *color,
 	   SDL_Surface *dest,
 	   int x,
-	   int y,
-	   SDL_Surface *blocks)
+	   int y)
 {
-    apply_surface(blocks, color, dest, x, y);
+    apply_surface(blocks_sprite, color, dest, x, y);
 }
 
 void
 draw_grid(int grid[GRID_ROWS][GRID_COLS],
-	  SDL_Surface *dest,
-	  SDL_Surface *blocks,
-	  SDL_Rect *block_colors[7])
+	  SDL_Surface *dest)
 {
     // Draw the background
     boxColor(dest, GRID_POS_X, GRID_POS_Y,
@@ -64,16 +107,13 @@ draw_grid(int grid[GRID_ROWS][GRID_COLS],
 	    if (grid[r][c])
 		draw_block(block_colors[grid[r][c]-1], dest,
 			   GRID_POS_X + c * BLOCK_SIZE,
-			   GRID_POS_Y + r * BLOCK_SIZE,
-			   blocks);
+			   GRID_POS_Y + r * BLOCK_SIZE);
 }
 
 void
 draw_free_blocks(free_blocks *a_blocks,
 		 SDL_Surface *dest,
-		 int x, int y,
-		 SDL_Surface *blocks,
-		 SDL_Rect *block_colors[7])
+		 int x, int y)
 {
     int r, c;
     for (r = 0; r < a_blocks->rows; r++)
@@ -81,8 +121,7 @@ draw_free_blocks(free_blocks *a_blocks,
 	    if (a_blocks->bs[r][c])
 		draw_block(block_colors[a_blocks->bs[r][c] - 1], dest,
 			   x + (a_blocks->pos.col + c) * BLOCK_SIZE,
-			   y + (a_blocks->pos.row + r) * BLOCK_SIZE,
-			   blocks);
+			   y + (a_blocks->pos.row + r) * BLOCK_SIZE);
 }
 
 void
@@ -96,43 +135,43 @@ empty_grid(int grid[GRID_ROWS][GRID_COLS])
 int
 draw_game_playing(int grid[GRID_ROWS][GRID_COLS],
 		  free_blocks *a_blocks,
-		  free_blocks *next_a_blocks,
-		  SDL_Surface *screen,
-		  SDL_Surface *blocks_sprite,
-		  SDL_Rect *block_colors[7])
+		  free_blocks *next_a_blocks)
 {
+	SDL_FillRect(SDL_GetVideoSurface(), NULL, SDL_MapRGB(SDL_GetVideoSurface()->format, 0, 0, 0));
+
 	// Display the grid
-	draw_grid(grid, screen, blocks_sprite, block_colors);
+	draw_grid(grid, SDL_GetVideoSurface());
 
 	if (a_blocks)
 	{
 	    // Display active blocks
-	    draw_free_blocks(a_blocks, screen, GRID_POS_X, GRID_POS_Y, blocks_sprite, block_colors);
+	    draw_free_blocks(a_blocks, SDL_GetVideoSurface(), GRID_POS_X, GRID_POS_Y);
 	}
 
 	if (next_a_blocks)
 	{
 	    int x = GRID_POS_X + GRID_COLS * BLOCK_SIZE + 50;
 	    int y = GRID_POS_Y;
-
-	    // Clear the space
-	    SDL_Rect fill;
-	    fill.x = x;
-	    fill.y = y;
-	    fill.w = 4 * BLOCK_SIZE;
-	    fill.h = 2 * BLOCK_SIZE;
-    
-	    SDL_FillRect(screen, &fill, SDL_MapRGB(screen->format, 0, 0, 0));
-
 	    //Display the next blocks
-	    draw_free_blocks(next_a_blocks, screen,
-			     GRID_POS_X + GRID_COLS * BLOCK_SIZE + 50,
-			     GRID_POS_Y, blocks_sprite, block_colors);
+	    draw_free_blocks(next_a_blocks, SDL_GetVideoSurface(), x, y + 20);
+
+	    // Write
+	    apply_surface(TTF_RenderText_Shaded(inconsolata15, "Next:", font_color_white, bgr_color),
+			  NULL, SDL_GetVideoSurface(), x, y);
 	}
 
 	// Display the screen
-	if (SDL_Flip(screen) == -1)
+	if (SDL_Flip(SDL_GetVideoSurface()) == -1)
 	    return(0);
 
 	return(1);
+}
+
+int
+draw_game_paused()
+{
+    if (SDL_Flip(SDL_GetVideoSurface()) == -1)
+	return(0);
+
+    return(1);
 }

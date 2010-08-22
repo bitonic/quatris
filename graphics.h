@@ -3,6 +3,7 @@
 
 #include "SDL/SDL.h"
 #include "SDL/SDL_image.h"
+#include "SDL/SDL_ttf.h"
 #include "conf.h"
 #include "blocks.h"
 
@@ -11,6 +12,10 @@
 // The position of the grid
 #define GRID_POS_X 40
 #define GRID_POS_Y 40
+
+// Colors
+#define GRID_BGR 0x101010FF
+#define GAME_PAUSED_BGR 0x00000000
 
 void
 apply_surface(SDL_Surface *source,
@@ -21,6 +26,9 @@ apply_surface(SDL_Surface *source,
 
 SDL_Surface *
 load_image(char *filename);
+
+int
+init_graphics();
 
 /*
  * These must be in the same order as in the 
@@ -35,23 +43,16 @@ void
 draw_block(SDL_Rect *type,
 	   SDL_Surface *dest,
 	   int x,
-	   int y,
-	   SDL_Surface *blocks);
-
-#define GRID_BGR 0x101010FF
+	   int y);
 
 void
 draw_grid(int grid[GRID_ROWS][GRID_COLS],
-	  SDL_Surface *dest,
-	  SDL_Surface *blocks,
-	  SDL_Rect *block_colors[7]);
+	  SDL_Surface *dest);
 
 void
 draw_free_blocks(free_blocks *a_blocks,
 		 SDL_Surface *dest,
-		 int x, int y,
-		 SDL_Surface *blocks,
-		 SDL_Rect *block_colors[7]);
+		 int x, int y);
 
 void
 empty_grid(int grid[GRID_ROWS][GRID_COLS]);
@@ -59,9 +60,9 @@ empty_grid(int grid[GRID_ROWS][GRID_COLS]);
 int
 draw_game_playing(int grid[GRID_ROWS][GRID_COLS],
 		  free_blocks *a_blocks,
-		  free_blocks *next_a_blocks,
-		  SDL_Surface *screen,
-		  SDL_Surface *blocks_sprite,
-		  SDL_Rect *blocks_colors[7]);
+		  free_blocks *next_a_blocks);
+
+int
+draw_game_paused();
 
 #endif

@@ -2,6 +2,7 @@
 #include <time.h>
 #include "SDL/SDL.h"
 #include "SDL/SDL_framerate.h"
+#include "SDL/SDL_ttf.h"
 #include "conf.h"
 #include "game.h"
 #include "graphics.h"
@@ -19,9 +20,6 @@ FPSmanager *fpsmanager = NULL;
 GAME_STATE game_state = SPLASHSCREEN;
 
 // Needed for graphics.c
-SDL_Surface *blocks_sprite = NULL; // It will hold the img with the blocks
-SDL_Rect *block_colors[7]; // It will hold the various rects
-                                // for the various colors
 int grid[GRID_ROWS][GRID_COLS]; // The actual grid
 
 // The active blocks
@@ -32,11 +30,15 @@ free_blocks *next_a_blocks = NULL;
 Uint32 fall_timer;
 Uint32 fall_interval;
 
+// The score
+int *score = 0;
+
 int mov_down;
 
 int
 init()
 {
+    // Init sdl...
     if (SDL_Init(SDL_INIT_EVERYTHING) == -1)
     {
 	fprintf(stderr, "Unable to init SDL.\n");
@@ -52,22 +54,13 @@ init()
 	return(0);
     }
 
-    SDL_WM_SetCaption("Tetris", NULL);
-
-    // Init the graphics
-    blocks_sprite = load_image("files/blocks.png"); // Load the sprite with the blocks
-
-    // Loads the various rects into the blocks_types array
-    int i;
-    for (i = 0; i < 7; i++)
+    // Init the font lib
+    if (TTF_Init() == -1)
     {
-	block_colors[i] = (SDL_Rect *) malloc(sizeof(SDL_Rect));
-	block_colors[i]->x = i * BLOCK_SIZE;
-	block_colors[i]->y = 0;
-	block_colors[i]->w = BLOCK_SIZE;
-	block_colors[i]->h = BLOCK_SIZE;
+	fprintf(stderr, "Unable to initialize the ttf library.\n");
+	return(0);
     }
-
+    
     a_blocks = (free_blocks *) malloc(sizeof(free_blocks));
     a_blocks->rows = 0;
     a_blocks->cols = 0;
@@ -75,6 +68,12 @@ init()
     next_a_blocks->rows = 0;
     next_a_blocks->cols = 0;
 
+    // Init the graphics
+    if (!init_graphics())
+	return(0);
+
+    // Set the caption
+    SDL_WM_SetCaption("Tetris", NULL);
 
     // The interval in wich pieces fall
     fall_interval = 700;
@@ -92,7 +91,6 @@ init()
 void
 clean_up()
 {
-    SDL_FreeSurface(blocks_sprite);
     
     SDL_Quit();
 }
@@ -123,7 +121,7 @@ main(int argv, char *argc[])
 	SDL_framerateDelay(fpsmanager);
     }
 
-    // generate the blocks 
+    // Generate the blocks
     generate_a_blocks(next_a_blocks, rand() % 7);
     generate_a_blocks(a_blocks, rand() % 7);
 
@@ -139,9 +137,6 @@ main(int argv, char *argc[])
 	{
 	case PLAYING:
 	    if (!game_playing(&game_state,
-			      screen,
-			      blocks_sprite,
-			      block_colors,
 			      event,
 			      grid,
 			      a_blocks,
@@ -154,7 +149,6 @@ main(int argv, char *argc[])
 	    break;
 	case PAUSED:
 	    if (!game_paused(&game_state,
-			     screen,
 			     event))
 		return(1);
 	    break;
