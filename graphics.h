@@ -13,8 +13,11 @@
 #define GRID_POS_Y 40
 
 void
-apply_surface(SDL_Surface *source, SDL_Rect *clip,
-	      SDL_Surface *dest, int x, int y);
+apply_surface(SDL_Surface *source,
+	      SDL_Rect *clip,
+	      SDL_Surface *dest,
+	      int x,
+	      int y);
 
 SDL_Surface *
 load_image(char *filename);
@@ -29,12 +32,17 @@ typedef enum {
 } BLOCK_COLORS;
 
 void
-draw_block(SDL_Rect *type, SDL_Surface *dest, int x, int y,
+draw_block(SDL_Rect *type,
+	   SDL_Surface *dest,
+	   int x,
+	   int y,
 	   SDL_Surface *blocks);
 
 void
-draw_grid(int grid[GRID_ROWS][GRID_COLS], SDL_Surface *dest,
-	  SDL_Surface *blocks, SDL_Rect *block_colors[7]);
+draw_grid(int grid[GRID_ROWS][GRID_COLS],
+	  SDL_Surface *dest,
+	  SDL_Surface *blocks,
+	  SDL_Rect *block_colors[7]);
 
 void
 draw_free_blocks(free_blocks *a_blocks,
@@ -47,11 +55,11 @@ void
 empty_grid(int grid[GRID_ROWS][GRID_COLS]);
 
 int
-draw_game(int grid[GRID_ROWS][GRID_COLS],
-	  free_blocks *a_blocks,
-	  free_blocks *next_a_blocks,
-	  SDL_Surface *screen,
-	  SDL_Surface *blocks_sprite,
-	  SDL_Rect *blocks_colors[7]);
+draw_game_playing(int grid[GRID_ROWS][GRID_COLS],
+		  free_blocks *a_blocks,
+		  free_blocks *next_a_blocks,
+		  SDL_Surface *screen,
+		  SDL_Surface *blocks_sprite,
+		  SDL_Rect *blocks_colors[7]);
 
 #endif

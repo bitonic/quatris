@@ -5,7 +5,9 @@
 #include "graphics.h"
 
 int
-move_blocks(int grid[GRID_ROWS][GRID_COLS], free_blocks *a_blocks, BLOCK_MOV mov)
+move_blocks(int grid[GRID_ROWS][GRID_COLS],
+	    free_blocks *a_blocks,
+	    BLOCK_MOV mov)
 {
     int r, c;
     /*
@@ -19,7 +21,7 @@ move_blocks(int grid[GRID_ROWS][GRID_COLS], free_blocks *a_blocks, BLOCK_MOV mov
     case LEFT:
 	for (r = 0; r < a_blocks->rows; r++)
 	    for (c = 0; c < a_blocks->cols; c++)
-		if (a_blocks->bs[r][c] && // If there is a block, check
+		if (a_blocks->bs[r][c] &&           // If there is a block, check
 		    ((a_blocks->pos.col + c < 1) || // That the block is in the grid
 		     // And that the block at the left in the grid is empty.
 		     grid[a_blocks->pos.row + r][a_blocks->pos.col + c - 1]))
@@ -54,13 +56,16 @@ move_blocks(int grid[GRID_ROWS][GRID_COLS], free_blocks *a_blocks, BLOCK_MOV mov
 }
 
 void
-generate_a_blocks(free_blocks *a_blocks, int new_block)
+generate_a_blocks(free_blocks *a_blocks,
+		  int new_block)
 {
     // Empty the array
     memset(a_blocks->bs, 0, sizeof(a_blocks->bs));
 
     a_blocks->pos.row = 0;
     a_blocks->pos.col = 0;
+
+    // Tetrominoes...
     switch(new_block)
     {
     case I:
@@ -125,28 +130,20 @@ generate_a_blocks(free_blocks *a_blocks, int new_block)
 }
 
 void
-copy_free_blocks(free_blocks *dest, free_blocks *src)
-{
-    dest->pos = src->pos;
-    dest->rows = src->rows;
-    dest->cols = src->cols;
-    int r;
-    for (r = 0; r < src->rows; r++)
-	memcpy(dest->bs[r], src->bs[r], sizeof(int) * src->cols);
-}
-
-void
-blocks_on_grid(int grid[GRID_ROWS][GRID_COLS], free_blocks *a_blocks)
+blocks_on_grid(int grid[GRID_ROWS][GRID_COLS],
+	       free_blocks *a_blocks)
 {
     int c, r;
     for (r = 0; r < a_blocks->rows; r++)
 	for (c = 0; c < a_blocks->cols; c++)
-	    if (a_blocks->bs[r][c])
+	    if (a_blocks->bs[r][c]) // If there is a block, put it on the grid
 		grid[a_blocks->pos.row + r][a_blocks->pos.col + c] = a_blocks->bs[r][c];
 }
 
 int
-rotate_blocks(int grid[GRID_ROWS][GRID_COLS], free_blocks *a_blocks, int clockwise)
+rotate_blocks(int grid[GRID_ROWS][GRID_COLS],
+	      free_blocks *a_blocks,
+	      int clockwise)
 {
     free_blocks *new_blocks = (free_blocks *) malloc(sizeof(free_blocks));
     
@@ -197,9 +194,12 @@ update_grid(int grid[GRID_ROWS][GRID_COLS],
 	    FPSmanager *fpsmanager)
 {
     Uint32 timer, interval;
-    int cleared_rows[4], cleared_row, counter, grid_changed;
+    int cleared_rows[4]; // Keeps track of the complete rows
+    int cleared_row, grid_changed; // Useful bools
+    int counter;
     int new_grid[GRID_ROWS][GRID_COLS];
 
+    // Makes a copy of the old grid to work on
     memcpy(new_grid, grid, sizeof(new_grid));
 
     int r, c;
@@ -210,41 +210,48 @@ update_grid(int grid[GRID_ROWS][GRID_COLS],
     {
 	cleared_row = 1;
 	for (c = 0; c < GRID_COLS; c++)
+	    // If one cell is not 0, then the row is not cleared
 	    if (!new_grid[r][c])
 	    {
 		cleared_row = 0;
 		break;
 	    }
 
+	// If the row is cleared
 	if (cleared_row)
 	{
 	    grid_changed = 1;
-	    cleared_rows[counter] = r;
+	    cleared_rows[counter] = r; // Remember it
 	    counter++;
+	    // Set it to 0 in the grid copy for the animation
 	    memset(new_grid[r], 0, sizeof(new_grid[r]));
 	}
     }
-
+    
+    // If 1 or more row were cleared
     if (grid_changed)
     {
 	// Animate
 	timer = SDL_GetTicks();
-	interval = 200;
+	interval = 200; // Interval between the blinking
+
+	// Displays intermittedly the old grid and the
+	// grid with the rows filled with 0s
 	while (SDL_GetTicks() - timer < interval)
 	{	    
-	    draw_game(new_grid, NULL, NULL, dest, blocks, block_colors);
+	    draw_game_playing(new_grid, NULL, NULL, dest, blocks, block_colors);
 	    SDL_framerateDelay(fpsmanager);
 	}
 	timer = SDL_GetTicks();
 	while (SDL_GetTicks() - timer < interval)
 	{
-	    draw_game(grid, NULL, NULL, dest, blocks, block_colors);
+	    draw_game_playing(grid, NULL, NULL, dest, blocks, block_colors);
 	    SDL_framerateDelay(fpsmanager);
 	}
 	timer = SDL_GetTicks();
 	while (SDL_GetTicks() - timer < interval)
 	{
-	    draw_game(new_grid, NULL, NULL, dest, blocks, block_colors);
+	    draw_game_playing(new_grid, NULL, NULL, dest, blocks, block_colors);
 	    SDL_framerateDelay(fpsmanager);
 	}
 
@@ -252,9 +259,11 @@ update_grid(int grid[GRID_ROWS][GRID_COLS],
 	int i;
 	for (i = 0; i < counter; i++)
 	{
+	    // Shift the row down, starting from the cleared row
 	    for (r = cleared_rows[i]; r > 0; r--)
 		memcpy(grid[r], grid[r - 1], sizeof(grid[0]));
 
+	    // Set the topmost row to 0
 	    memset(grid[0], 0, sizeof(grid[0]));
 	}
     }
@@ -353,7 +362,7 @@ game_playing(GAME_STATE *game_state,
 	    *fall_timer = SDL_GetTicks(); // Reset timer
     }
 
-    if (!draw_game(grid, a_blocks, next_a_blocks, screen, blocks_sprite, block_colors))
+    if (!draw_game_playing(grid, a_blocks, next_a_blocks, screen, blocks_sprite, block_colors))
 	return(0);
 
     return(1);
@@ -378,4 +387,17 @@ game_paused(GAME_STATE *game_state,
     }
 
     return(1);
+}
+
+
+void
+copy_free_blocks(free_blocks *dest,
+		 free_blocks *src)
+{
+    dest->pos = src->pos;
+    dest->rows = src->rows;
+    dest->cols = src->cols;
+    int r;
+    for (r = 0; r < src->rows; r++)
+	memcpy(dest->bs[r], src->bs[r], sizeof(int) * src->cols);
 }

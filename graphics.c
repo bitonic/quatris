@@ -3,8 +3,12 @@
 #include "graphics.h"
 
 void
-apply_surface(SDL_Surface *source, SDL_Rect *clip,
-	      SDL_Surface *dest, int x, int y)
+apply_surface(
+    SDL_Surface *source,
+    SDL_Rect *clip,
+    SDL_Surface *dest,
+    int x,
+    int y)
 {
     SDL_Rect offset;
 
@@ -34,15 +38,20 @@ load_image(char *filename)
 }
 
 void
-draw_block(SDL_Rect *color, SDL_Surface *dest, int x, int y,
+draw_block(SDL_Rect *color,
+	   SDL_Surface *dest,
+	   int x,
+	   int y,
 	   SDL_Surface *blocks)
 {
     apply_surface(blocks, color, dest, x, y);
 }
 
 void
-draw_grid(int grid[GRID_ROWS][GRID_COLS], SDL_Surface *dest,
-	  SDL_Surface *blocks, SDL_Rect *block_colors[7])
+draw_grid(int grid[GRID_ROWS][GRID_COLS],
+	  SDL_Surface *dest,
+	  SDL_Surface *blocks,
+	  SDL_Rect *block_colors[7])
 {
     // Draw the background
     boxColor(dest, GRID_POS_X, GRID_POS_Y,
@@ -86,12 +95,12 @@ empty_grid(int grid[GRID_ROWS][GRID_COLS])
 }
 
 int
-draw_game(int grid[GRID_ROWS][GRID_COLS],
-	  free_blocks *a_blocks,
-	  free_blocks *next_a_blocks,
-	  SDL_Surface *screen,
-	  SDL_Surface *blocks_sprite,
-	  SDL_Rect *block_colors[7])
+draw_game_playing(int grid[GRID_ROWS][GRID_COLS],
+		  free_blocks *a_blocks,
+		  free_blocks *next_a_blocks,
+		  SDL_Surface *screen,
+		  SDL_Surface *blocks_sprite,
+		  SDL_Rect *block_colors[7])
 {
 	// Display the grid
 	draw_grid(grid, screen, blocks_sprite, block_colors);

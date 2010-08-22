@@ -12,28 +12,52 @@ typedef enum {
     PLAYING, PAUSED, LOST, SPLASHSCREEN, QUIT
 } GAME_STATE;
 
+/*
+  GAME OPERATIONS
+*/
+
 // Move the blocks
 int
-move_blocks(int grid[][GRID_COLS], free_blocks *a_blocks, BLOCK_MOV mov);
+move_blocks(int grid[][GRID_COLS],
+	    free_blocks *a_blocks,
+	    BLOCK_MOV mov);
 
 // Generate a new tetromino at the top of the grid
 void
-generate_a_blocks(free_blocks *a_blocks, int new_block);
-
-void
-copy_free_blocks(free_blocks *dest, free_blocks *src);
+generate_a_blocks(free_blocks *a_blocks,
+		  int new_block);
 
 // Puts the active tetromino in the grid
 void
-blocks_on_grid(int grid[GRID_ROWS][GRID_COLS], free_blocks *a_blocks);
+blocks_on_grid(int grid[GRID_ROWS][GRID_COLS],
+	       free_blocks *a_blocks);
 
 int
-rotate_blocks(int grid[GRID_ROWS][GRID_COLS], free_blocks *a_blocks, int clockwise);
+rotate_blocks(int grid[GRID_ROWS][GRID_COLS],
+	      free_blocks *a_blocks,
+	      int clockwise);
 
+/*
+  If there are complete rows, then it animates
+  the grid and removes the rows from it.
+*/
 int
-update_grid(int grid[GRID_ROWS][GRID_COLS], SDL_Surface *dest,
-	    SDL_Surface *blocks, SDL_Rect *block_colors[7],
+update_grid(int grid[GRID_ROWS][GRID_COLS],
+	    SDL_Surface *dest,
+	    SDL_Surface *blocks,
+	    SDL_Rect *block_colors[7],
 	    FPSmanager *fpsmanager);
+
+/*
+  UTILS
+*/
+void
+copy_free_blocks(free_blocks *dest,
+		 free_blocks *src);
+
+/*
+  GAME STATES
+*/
 
 int
 game_playing(GAME_STATE *game_state,
