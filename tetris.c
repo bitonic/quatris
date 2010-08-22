@@ -1,7 +1,6 @@
 #include <stdlib.h>
 #include <time.h>
 #include "SDL/SDL.h"
-#include "SDL/SDL_ttf"
 #include "SDL/SDL_framerate.h"
 #include "conf.h"
 #include "game.h"
@@ -27,6 +26,7 @@ int grid[GRID_ROWS][GRID_COLS]; // The actual grid
 
 // The active blocks
 free_blocks *a_blocks = NULL;
+free_blocks *next_a_blocks = NULL;
 
 // The timer to time the falling of pieces
 Uint32 fall_timer;
@@ -38,13 +38,19 @@ int
 init()
 {
     if (SDL_Init(SDL_INIT_EVERYTHING) == -1)
+    {
+	fprintf(stderr, "Unable to init SDL.\n");
 	return(0);
+    }
 
     screen = SDL_SetVideoMode(SCREEN_WIDTH, SCREEN_HEIGHT,
 			      SCREEN_BPP, SDL_SWSURFACE);
 
     if (screen == NULL)
+    {
+	fprintf(stderr, "Unable to create the screen surface.\n");
 	return(0);
+    }
 
     SDL_WM_SetCaption("Tetris", NULL);
 
@@ -65,6 +71,10 @@ init()
     a_blocks = (free_blocks *) malloc(sizeof(free_blocks));
     a_blocks->rows = 0;
     a_blocks->cols = 0;
+    next_a_blocks = (free_blocks *) malloc(sizeof(free_blocks));
+    next_a_blocks->rows = 0;
+    next_a_blocks->cols = 0;
+
 
     // The interval in wich pieces fall
     fall_interval = 700;
@@ -113,7 +123,9 @@ main(int argv, char *argc[])
 	SDL_framerateDelay(fpsmanager);
     }
 
-    generate_a_blocks(a_blocks);
+    // generate the blocks 
+    generate_a_blocks(next_a_blocks, rand() % 7);
+    generate_a_blocks(a_blocks, rand() % 7);
 
     // Start the timer
     fall_timer = SDL_GetTicks();
@@ -133,6 +145,7 @@ main(int argv, char *argc[])
 			      event,
 			      grid,
 			      a_blocks,
+			      next_a_blocks,
 			      &fall_timer,
 			      &fall_interval,
 			      &mov_down,

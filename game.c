@@ -54,13 +54,13 @@ move_blocks(int grid[GRID_ROWS][GRID_COLS], free_blocks *a_blocks, BLOCK_MOV mov
 }
 
 void
-generate_a_blocks(free_blocks *a_blocks)
+generate_a_blocks(free_blocks *a_blocks, int new_block)
 {
     // Empty the array
     memset(a_blocks->bs, 0, sizeof(a_blocks->bs));
 
-    int new_block = rand() % 7;
     a_blocks->pos.row = 0;
+    a_blocks->pos.col = 0;
     switch(new_block)
     {
     case I:
@@ -122,7 +122,17 @@ generate_a_blocks(free_blocks *a_blocks)
     default:
 	break;
     }
-    a_blocks->pos.col = GRID_COLS / 2 - a_blocks->cols / 2;
+}
+
+void
+copy_free_blocks(free_blocks *dest, free_blocks *src)
+{
+    dest->pos = src->pos;
+    dest->rows = src->rows;
+    dest->cols = src->cols;
+    int r;
+    for (r = 0; r < src->rows; r++)
+	memcpy(dest->bs[r], src->bs[r], sizeof(int) * src->cols);
 }
 
 void
@@ -180,8 +190,10 @@ rotate_blocks(int grid[GRID_ROWS][GRID_COLS], free_blocks *a_blocks, int clockwi
 }
 
 int
-update_grid(int grid[GRID_ROWS][GRID_COLS], SDL_Surface *dest,
-	    SDL_Surface *blocks, SDL_Rect *block_colors[7],
+update_grid(int grid[GRID_ROWS][GRID_COLS],
+	    SDL_Surface *dest,
+	    SDL_Surface *blocks,
+	    SDL_Rect *block_colors[7],
 	    FPSmanager *fpsmanager)
 {
     Uint32 timer, interval;
@@ -220,19 +232,19 @@ update_grid(int grid[GRID_ROWS][GRID_COLS], SDL_Surface *dest,
 	interval = 200;
 	while (SDL_GetTicks() - timer < interval)
 	{	    
-	    draw_game(new_grid, NULL, dest, blocks, block_colors);
+	    draw_game(new_grid, NULL, NULL, dest, blocks, block_colors);
 	    SDL_framerateDelay(fpsmanager);
 	}
 	timer = SDL_GetTicks();
 	while (SDL_GetTicks() - timer < interval)
 	{
-	    draw_game(grid, NULL, dest, blocks, block_colors);
+	    draw_game(grid, NULL, NULL, dest, blocks, block_colors);
 	    SDL_framerateDelay(fpsmanager);
 	}
 	timer = SDL_GetTicks();
 	while (SDL_GetTicks() - timer < interval)
 	{
-	    draw_game(new_grid, NULL, dest, blocks, block_colors);
+	    draw_game(new_grid, NULL, NULL, dest, blocks, block_colors);
 	    SDL_framerateDelay(fpsmanager);
 	}
 
@@ -258,6 +270,7 @@ game_playing(GAME_STATE *game_state,
 	     SDL_Event event,
 	     int grid[GRID_ROWS][GRID_COLS],
 	     free_blocks *a_blocks,
+	     free_blocks *next_a_blocks,
 	     Uint32 *fall_timer,
 	     Uint32 *fall_interval,
 	     int *mov_down,
@@ -329,13 +342,18 @@ game_playing(GAME_STATE *game_state,
 	{
 	    blocks_on_grid(grid, a_blocks);
 	    update_grid(grid, screen, blocks_sprite, block_colors, fpsmanager);
-	    generate_a_blocks(a_blocks);
+	    // Copy the blocks planned to the active blocks
+	    copy_free_blocks(a_blocks, next_a_blocks);
+	    // Set the right column
+	    a_blocks->pos.col = GRID_COLS / 2 - a_blocks->cols / 2;
+	    // Generate new blocks
+	    generate_a_blocks(next_a_blocks, rand() % 7);
 	}
 	if (enough_time)
 	    *fall_timer = SDL_GetTicks(); // Reset timer
     }
 
-    if (!draw_game(grid, a_blocks, screen, blocks_sprite, block_colors))
+    if (!draw_game(grid, a_blocks, next_a_blocks, screen, blocks_sprite, block_colors))
 	return(0);
 
     return(1);

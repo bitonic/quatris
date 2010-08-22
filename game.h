@@ -18,8 +18,10 @@ move_blocks(int grid[][GRID_COLS], free_blocks *a_blocks, BLOCK_MOV mov);
 
 // Generate a new tetromino at the top of the grid
 void
-generate_a_blocks(free_blocks *a_blocks);
+generate_a_blocks(free_blocks *a_blocks, int new_block);
 
+void
+copy_free_blocks(free_blocks *dest, free_blocks *src);
 
 // Puts the active tetromino in the grid
 void
@@ -41,6 +43,7 @@ game_playing(GAME_STATE *game_state,
 	     SDL_Event event,
 	     int grid[GRID_ROWS][GRID_COLS],
 	     free_blocks *a_blocks,
+	     free_blocks *next_a_blocks,
 	     Uint32 *fall_timer,
 	     Uint32 *fall_interval,
 	     int *mov_down,

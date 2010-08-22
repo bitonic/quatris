@@ -37,15 +37,21 @@ draw_grid(int grid[GRID_ROWS][GRID_COLS], SDL_Surface *dest,
 	  SDL_Surface *blocks, SDL_Rect *block_colors[7]);
 
 void
-draw_a_blocks(free_blocks *a_blocks, SDL_Surface *dest,
-	      SDL_Surface *blocks, SDL_Rect *block_colors[7]);
+draw_free_blocks(free_blocks *a_blocks,
+		 SDL_Surface *dest,
+		 int x, int y,
+		 SDL_Surface *blocks,
+		 SDL_Rect *block_colors[7]);
 
 void
 empty_grid(int grid[GRID_ROWS][GRID_COLS]);
 
 int
-draw_game(int grid[GRID_ROWS][GRID_COLS], free_blocks *a_blocks,
-	  SDL_Surface *screen, SDL_Surface *blocks_sprite,
+draw_game(int grid[GRID_ROWS][GRID_COLS],
+	  free_blocks *a_blocks,
+	  free_blocks *next_a_blocks,
+	  SDL_Surface *screen,
+	  SDL_Surface *blocks_sprite,
 	  SDL_Rect *blocks_colors[7]);
 
 #endif
