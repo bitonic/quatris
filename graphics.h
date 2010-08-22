@@ -38,6 +38,8 @@ draw_block(SDL_Rect *type,
 	   int y,
 	   SDL_Surface *blocks);
 
+#define GRID_BGR 0x101010FF
+
 void
 draw_grid(int grid[GRID_ROWS][GRID_COLS],
 	  SDL_Surface *dest,

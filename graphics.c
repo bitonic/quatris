@@ -3,12 +3,11 @@
 #include "graphics.h"
 
 void
-apply_surface(
-    SDL_Surface *source,
-    SDL_Rect *clip,
-    SDL_Surface *dest,
-    int x,
-    int y)
+apply_surface(SDL_Surface *source,
+	      SDL_Rect *clip,
+	      SDL_Surface *dest,
+	      int x,
+	      int y)
 {
     SDL_Rect offset;
 
@@ -57,7 +56,7 @@ draw_grid(int grid[GRID_ROWS][GRID_COLS],
     boxColor(dest, GRID_POS_X, GRID_POS_Y,
 	     GRID_POS_X + GRID_COLS * BLOCK_SIZE,
 	     GRID_POS_Y + GRID_ROWS * BLOCK_SIZE,
-	     0x303030FF);
+	     GRID_BGR);
 
     int c, r;
     for (c = 0; c < GRID_COLS; c++)
