@@ -10,8 +10,11 @@
 #define FALL_INTERVAL 700
 #define BLINK_INTERVAL 100
 
-#define TIME_SCORE 5
-#define ROW_SCORE 5
+#define DROP_SCORE 6
+#define SCORE_SINGLE 40
+#define SCORE_DOUBLE 100
+#define SCORE_TRIPLE 300
+#define SCORE_TETRIS 1200
 
 #define LEVEL_INTERVAL 60000 // One minute
 #define MAX_LEVEL 10

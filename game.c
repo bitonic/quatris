@@ -282,8 +282,6 @@ update_grid(int grid[GRID_ROWS][GRID_COLS],
 	score = 4;
 	for (i = 0; i < counter; i++)
 	{
-	    score *= 2;
-
 	    // Shift the row down, starting from the cleared row
 	    for (r = cleared_rows[i]; r > 0; r--)
 		memcpy(grid[r], grid[r - 1], sizeof(grid[0]));
@@ -293,7 +291,22 @@ update_grid(int grid[GRID_ROWS][GRID_COLS],
 	}
     }
 
-    return(score);
+    // Calculate score
+    switch(counter)
+    {
+    case 0:
+	return(0);
+    case 1:
+	return(SCORE_SINGLE);
+    case 2:
+	return(SCORE_DOUBLE);
+    case 3:
+	return(SCORE_TRIPLE);
+    case 4:
+	return(SCORE_TETRIS);
+    default:
+	return(0);
+    }
 }
 
 int
@@ -376,6 +389,8 @@ game_playing(GAME_STATE *game_state,
 	{
 	    // Put the blocks on the grid
 	    blocks_on_grid(grid);
+	    // Assign the score for the drop
+	    *score += DROP_SCORE;
 	    // Check if there are some complete rows, and update the score
 	    *score += update_grid(grid, fpsmanager);
 	    // Copy the blocks planned to the active blocks
