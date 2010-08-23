@@ -4,9 +4,46 @@
 #include "game.h"
 #include "graphics.h"
 
+// The active blocks
+free_blocks *a_blocks = NULL;
+free_blocks *next_a_blocks = NULL;
+
+// The timer to time the falling of pieces
+Uint32 fall_timer;
+Uint32 fall_interval;
+
+int mov_down;
+
+void
+init_game()
+{
+    // The interval in wich pieces fall
+    fall_interval = 700;
+
+    a_blocks = (free_blocks *) malloc(sizeof(free_blocks));
+    a_blocks->rows = 0;
+    a_blocks->cols = 0;
+    next_a_blocks = (free_blocks *) malloc(sizeof(free_blocks));
+    next_a_blocks->rows = 0;
+    next_a_blocks->cols = 0;
+}
+
+void
+start_game()
+{
+    // Generate the blocks
+    generate_a_blocks(a_blocks, rand() % 7);
+    generate_a_blocks(next_a_blocks, rand() % 7);
+
+    // Start the timer
+    fall_timer = SDL_GetTicks();
+
+    // Set the down movement to 0
+    mov_down = 0;
+}
+
 int
 move_blocks(int grid[GRID_ROWS][GRID_COLS],
-	    free_blocks *a_blocks,
 	    BLOCK_MOV mov)
 {
     int r, c;
@@ -56,73 +93,73 @@ move_blocks(int grid[GRID_ROWS][GRID_COLS],
 }
 
 void
-generate_a_blocks(free_blocks *a_blocks,
+generate_a_blocks(free_blocks *f_blocks,
 		  int new_block)
 {
     // Empty the array
-    memset(a_blocks->bs, 0, sizeof(a_blocks->bs));
+    memset(f_blocks->bs, 0, sizeof(f_blocks->bs));
 
-    a_blocks->pos.row = 0;
-    a_blocks->pos.col = 0;
+    f_blocks->pos.row = 0;
+    f_blocks->pos.col = 0;
 
     // Tetrominoes...
     switch(new_block)
     {
     case I:
-	a_blocks->rows = 1;
-	a_blocks->cols = 4;
-	a_blocks->bs[0][0] = 1;
-	a_blocks->bs[0][1] = 1;
-	a_blocks->bs[0][2] = 1;
-	a_blocks->bs[0][3] = 1;
+	f_blocks->rows = 1;
+	f_blocks->cols = 4;
+	f_blocks->bs[0][0] = 1;
+	f_blocks->bs[0][1] = 1;
+	f_blocks->bs[0][2] = 1;
+	f_blocks->bs[0][3] = 1;
 	break;
     case J:
-	a_blocks->rows = 2;
-	a_blocks->cols = 3;
-	a_blocks->bs[0][0] = 2;
-	a_blocks->bs[0][1] = 2;
-	a_blocks->bs[0][2] = 2;
-	a_blocks->bs[1][2] = 2;
+	f_blocks->rows = 2;
+	f_blocks->cols = 3;
+	f_blocks->bs[0][0] = 2;
+	f_blocks->bs[0][1] = 2;
+	f_blocks->bs[0][2] = 2;
+	f_blocks->bs[1][2] = 2;
 	break;
     case L:
-	a_blocks->rows = 2;
-	a_blocks->cols = 3;
-	a_blocks->bs[0][0] = 3;
-	a_blocks->bs[1][0] = 3;
-	a_blocks->bs[0][1] = 3;
-	a_blocks->bs[0][2] = 3;
+	f_blocks->rows = 2;
+	f_blocks->cols = 3;
+	f_blocks->bs[0][0] = 3;
+	f_blocks->bs[1][0] = 3;
+	f_blocks->bs[0][1] = 3;
+	f_blocks->bs[0][2] = 3;
 	break;
     case O:
-	a_blocks->rows = 2;
-	a_blocks->cols = 2;
-	a_blocks->bs[0][0] = 4;
-	a_blocks->bs[0][1] = 4;
-	a_blocks->bs[1][0] = 4;
-	a_blocks->bs[1][1] = 4;
+	f_blocks->rows = 2;
+	f_blocks->cols = 2;
+	f_blocks->bs[0][0] = 4;
+	f_blocks->bs[0][1] = 4;
+	f_blocks->bs[1][0] = 4;
+	f_blocks->bs[1][1] = 4;
 	break;
     case S:
-	a_blocks->rows = 2;
-	a_blocks->cols = 3;
-	a_blocks->bs[1][0] = 5;
-	a_blocks->bs[0][1] = 5;
-	a_blocks->bs[1][1] = 5;
-	a_blocks->bs[0][2] = 5;
+	f_blocks->rows = 2;
+	f_blocks->cols = 3;
+	f_blocks->bs[1][0] = 5;
+	f_blocks->bs[0][1] = 5;
+	f_blocks->bs[1][1] = 5;
+	f_blocks->bs[0][2] = 5;
 	break;
     case T:
-	a_blocks->rows = 2;
-	a_blocks->cols = 3;
-	a_blocks->bs[0][0] = 6;
-	a_blocks->bs[0][1] = 6;
-	a_blocks->bs[1][1] = 6;
-	a_blocks->bs[0][2] = 6;
+	f_blocks->rows = 2;
+	f_blocks->cols = 3;
+	f_blocks->bs[0][0] = 6;
+	f_blocks->bs[0][1] = 6;
+	f_blocks->bs[1][1] = 6;
+	f_blocks->bs[0][2] = 6;
 	break;
     case Z:
-	a_blocks->rows = 2;
-	a_blocks->cols = 3;
-	a_blocks->bs[0][0] = 7;
-	a_blocks->bs[0][1] = 7;
-	a_blocks->bs[1][1] = 7;
-	a_blocks->bs[1][2] = 7;
+	f_blocks->rows = 2;
+	f_blocks->cols = 3;
+	f_blocks->bs[0][0] = 7;
+	f_blocks->bs[0][1] = 7;
+	f_blocks->bs[1][1] = 7;
+	f_blocks->bs[1][2] = 7;
 	break;
     default:
 	break;
@@ -130,8 +167,7 @@ generate_a_blocks(free_blocks *a_blocks,
 }
 
 void
-blocks_on_grid(int grid[GRID_ROWS][GRID_COLS],
-	       free_blocks *a_blocks)
+blocks_on_grid(int grid[GRID_ROWS][GRID_COLS])
 {
     int c, r;
     for (r = 0; r < a_blocks->rows; r++)
@@ -142,7 +178,6 @@ blocks_on_grid(int grid[GRID_ROWS][GRID_COLS],
 
 int
 rotate_blocks(int grid[GRID_ROWS][GRID_COLS],
-	      free_blocks *a_blocks,
 	      int clockwise)
 {
     free_blocks *new_blocks = (free_blocks *) malloc(sizeof(free_blocks));
@@ -188,7 +223,6 @@ rotate_blocks(int grid[GRID_ROWS][GRID_COLS],
 
 int
 update_grid(int grid[GRID_ROWS][GRID_COLS],
-	    free_blocks *next_a_blocks,
 	    FPSmanager *fpsmanager)
 {
     Uint32 timer, interval;
@@ -273,11 +307,6 @@ int
 game_playing(GAME_STATE *game_state,
 	     SDL_Event event,
 	     int grid[GRID_ROWS][GRID_COLS],
-	     free_blocks *a_blocks,
-	     free_blocks *next_a_blocks,
-	     Uint32 *fall_timer,
-	     Uint32 *fall_interval,
-	     int *mov_down,
 	     FPSmanager *fpsmanager)
 {
     while (SDL_PollEvent(&event))
@@ -291,10 +320,10 @@ game_playing(GAME_STATE *game_state,
 	    switch (event.key.keysym.sym)
 	    {
 	    case SDLK_LEFT:
-		move_blocks(grid, a_blocks, LEFT);
+		move_blocks(grid, LEFT);
 		break;
 	    case SDLK_RIGHT:
-		move_blocks(grid, a_blocks, RIGHT);
+		move_blocks(grid, RIGHT);
 		break;
 	    case SDLK_DOWN:
 		/*
@@ -303,13 +332,13 @@ game_playing(GAME_STATE *game_state,
 		  set mov_down and we unset it when the user releases the
 		  key.
 		*/
-		*mov_down = 1;
+		mov_down = 1;
 		break;
 	    case SDLK_UP:
-		rotate_blocks(grid, a_blocks, 1);
+		rotate_blocks(grid, 1);
 		break;
 	    case SDLK_SPACE:
-		rotate_blocks(grid, a_blocks, 0);
+		rotate_blocks(grid, 0);
 		break;
 	    case SDLK_p:
 		*game_state = PAUSED;
@@ -322,7 +351,7 @@ game_playing(GAME_STATE *game_state,
 	    switch (event.key.keysym.sym)
 	    {
 	    case SDLK_DOWN:
-		*mov_down = 0;
+		mov_down = 0;
 		break;
 	    default:
 		break;
@@ -335,17 +364,17 @@ game_playing(GAME_STATE *game_state,
       If the user is pressing the down key, or if
       enough time has passed, move the pieces down.
     */
-    int enough_time = SDL_GetTicks() - *fall_timer > *fall_interval;
-    if (enough_time || *mov_down)
+    int enough_time = SDL_GetTicks() - fall_timer > fall_interval;
+    if (enough_time || mov_down)
     {
 	/*
 	  If we can move down, good, if we can't, generate new
 	  active blocks.
 	*/
-	if (!move_blocks(grid, a_blocks, DOWN) && enough_time)
+	if (!move_blocks(grid, DOWN) && enough_time)
 	{
-	    blocks_on_grid(grid, a_blocks);
-	    update_grid(grid, next_a_blocks, fpsmanager);
+	    blocks_on_grid(grid);
+	    update_grid(grid, fpsmanager);
 	    // Copy the blocks planned to the active blocks
 	    copy_free_blocks(a_blocks, next_a_blocks);
 	    // Set the right column
@@ -354,7 +383,7 @@ game_playing(GAME_STATE *game_state,
 	    generate_a_blocks(next_a_blocks, rand() % 7);
 	}
 	if (enough_time)
-	    *fall_timer = SDL_GetTicks(); // Reset timer
+	    fall_timer = SDL_GetTicks(); // Reset timer
     }
 
     if (!draw_game_playing(grid, a_blocks, next_a_blocks))

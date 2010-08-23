@@ -19,16 +19,7 @@ FPSmanager *fpsmanager = NULL;
 // The game state
 GAME_STATE game_state = SPLASHSCREEN;
 
-// Needed for graphics.c
 int grid[GRID_ROWS][GRID_COLS]; // The actual grid
-
-// The active blocks
-free_blocks *a_blocks = NULL;
-free_blocks *next_a_blocks = NULL;
-
-// The timer to time the falling of pieces
-Uint32 fall_timer;
-Uint32 fall_interval;
 
 // The score
 int *score = 0;
@@ -60,23 +51,16 @@ init()
 	fprintf(stderr, "Unable to initialize the ttf library.\n");
 	return(0);
     }
-    
-    a_blocks = (free_blocks *) malloc(sizeof(free_blocks));
-    a_blocks->rows = 0;
-    a_blocks->cols = 0;
-    next_a_blocks = (free_blocks *) malloc(sizeof(free_blocks));
-    next_a_blocks->rows = 0;
-    next_a_blocks->cols = 0;
 
     // Init the graphics
     if (!init_graphics())
 	return(0);
 
+    // Init the game
+    init_game();
+
     // Set the caption
     SDL_WM_SetCaption("Tetris", NULL);
-
-    // The interval in wich pieces fall
-    fall_interval = 700;
 
     // Init the random number generator
     srand((unsigned) time(0));
@@ -121,15 +105,8 @@ main(int argv, char *argc[])
 	SDL_framerateDelay(fpsmanager);
     }
 
-    // Generate the blocks
-    generate_a_blocks(next_a_blocks, rand() % 7);
-    generate_a_blocks(a_blocks, rand() % 7);
-
-    // Start the timer
-    fall_timer = SDL_GetTicks();
-
-    // Set the down movement to 0
-    mov_down = 0;
+    // Start the game
+    start_game();
 
     while(game_state != QUIT)
     {
@@ -139,11 +116,6 @@ main(int argv, char *argc[])
 	    if (!game_playing(&game_state,
 			      event,
 			      grid,
-			      a_blocks,
-			      next_a_blocks,
-			      &fall_timer,
-			      &fall_interval,
-			      &mov_down,
 			      fpsmanager))
 		return(1);
 	    break;
