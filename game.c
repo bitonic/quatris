@@ -15,11 +15,18 @@ Uint32 fall_interval;
 
 int mov_down;
 
+// The level of the game
+int level = 1;
+
+// The timer for the leveling up
+Uint32 level_timer;
+Uint32 level_interval = LEVEL_INTERVAL;
+
 void
 init_game()
 {
     // The interval in wich pieces fall
-    fall_interval = 700;
+    fall_interval = FALL_INTERVAL;
 
     a_blocks = (free_blocks *) malloc(sizeof(free_blocks));
     a_blocks->rows = 0;
@@ -41,6 +48,9 @@ start_game()
 
     // Set the down movement to 0
     mov_down = 0;
+
+    // Start the level timer
+    level_timer = SDL_GetTicks();
 }
 
 int
@@ -343,6 +353,13 @@ game_playing(GAME_STATE *game_state,
 	    break;
 	}
     }
+    // If enough time has passed, level up
+    if (SDL_GetTicks() - level_timer > LEVEL_INTERVAL && level < MAX_LEVEL)
+    {
+	level++;
+	fall_interval = FALL_INTERVAL - (FALL_INTERVAL / MAX_LEVEL * level);
+	level_timer = SDL_GetTicks();
+    }
 
     /*
       If the user is pressing the down key, or if
@@ -374,7 +391,7 @@ game_playing(GAME_STATE *game_state,
 	}
     }
 
-    if (!draw_game_playing(grid, a_blocks, next_a_blocks, *score))
+    if (!draw_game_playing(grid, a_blocks, next_a_blocks, *score, level))
 	return(0);
 
     return(1);
