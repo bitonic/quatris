@@ -5,7 +5,7 @@
 SDL_Color bgr_color = {0, 0, 0};
 
 SDL_Surface *blocks_sprite = NULL; // It will hold the img with the blocks
-SDL_Rect *block_colors[7]; // It will hold the various rects
+SDL_Rect *block_colors[8]; // It will hold the various rects
                            // for the various colors
 
 // Fonts
@@ -55,7 +55,7 @@ init_graphics()
 
     // Loads the various rects into the blocks_types array
     int i;
-    for (i = 0; i < 7; i++)
+    for (i = 0; i < 8; i++)
     {
 	block_colors[i] = (SDL_Rect *) malloc(sizeof(SDL_Rect));
 	block_colors[i]->x = i * BLOCK_SIZE;

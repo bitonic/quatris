@@ -36,7 +36,7 @@ init_graphics();
  */
 typedef enum {
     CYAN = 1, BLUE, ORANGE, YELLOW,
-    GREEN, PURPLE, RED
+    GREEN, PURPLE, RED, GREY
 } BLOCK_COLORS;
 
 void

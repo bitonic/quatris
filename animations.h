@@ -9,4 +9,8 @@ blink_grid(int grid1[GRID_ROWS][GRID_COLS],
 	   int grid2[GRID_ROWS][GRID_COLS],
 	   FPSmanager *fpsmanager);
 
+void
+game_over(int[GRID_ROWS][GRID_COLS],
+	  FPSmanager *fpsmanager);
+
 #endif

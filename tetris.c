@@ -125,6 +125,11 @@ main(int argv, char *argc[])
 			     event))
 		return(1);
 	    break;
+	case LOST:
+	    if (!game_lost(grid,
+			   &game_state,
+			   event))
+		return(1);
 	default:
 	    break;
 	}

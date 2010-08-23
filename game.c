@@ -43,6 +43,9 @@ start_game()
     generate_a_blocks(a_blocks, rand() % 7);
     generate_a_blocks(next_a_blocks, rand() % 7);
 
+    // Set the right column
+    a_blocks->pos.col = GRID_COLS / 2 - a_blocks->cols / 2;
+
     // Start the timer
     fall_timer = SDL_GetTicks();
 
@@ -233,6 +236,18 @@ rotate_blocks(int grid[GRID_ROWS][GRID_COLS],
 }
 
 int
+has_lost(int grid[GRID_ROWS][GRID_COLS])
+{
+    int c, r;
+    for (r = 0; r < a_blocks->rows; r++)
+	for (c = 0; c < a_blocks->cols; c++)
+	    if (a_blocks->bs[r][c] && 
+		grid[a_blocks->pos.row + r][a_blocks->pos.col + c])
+		return(1);
+    return(0);
+}
+
+int
 update_grid(int grid[GRID_ROWS][GRID_COLS],
 	    FPSmanager *fpsmanager)
 {
@@ -389,14 +404,28 @@ game_playing(GAME_STATE *game_state,
 	{
 	    // Put the blocks on the grid
 	    blocks_on_grid(grid);
+
 	    // Assign the score for the drop
 	    *score += DROP_SCORE;
+
 	    // Check if there are some complete rows, and update the score
 	    *score += update_grid(grid, fpsmanager);
+
 	    // Copy the blocks planned to the active blocks
 	    copy_free_blocks(a_blocks, next_a_blocks);
+
 	    // Set the right column
 	    a_blocks->pos.col = GRID_COLS / 2 - a_blocks->cols / 2;
+
+	    // Check if the user has lost
+	    if (has_lost(grid))
+	    {
+		// Animation
+		game_over(grid, fpsmanager);
+		*game_state = LOST;
+		return(1);
+	    }
+
 	    // Generate new blocks
 	    generate_a_blocks(next_a_blocks, rand() % 7);
 	}
@@ -431,6 +460,30 @@ game_paused(GAME_STATE *game_state,
 
     if (!draw_game_paused())
 	return(0);
+
+    return(1);
+}
+
+int
+game_lost(int grid[GRID_ROWS][GRID_COLS],
+	  GAME_STATE *game_state,
+	  SDL_Event event)
+
+{
+    int r;
+    while (SDL_PollEvent(&event))
+    {
+	switch (event.type)
+	{
+	case SDL_QUIT:
+	    *game_state = QUIT;
+	case SDL_KEYDOWN:
+	    for (r = 0; r < GRID_ROWS; r++)
+		memset(grid[r], 0, sizeof(grid[r])); // Empty the grid
+	    start_game();
+	    *game_state = PLAYING;
+	}
+    }
 
     return(1);
 }
