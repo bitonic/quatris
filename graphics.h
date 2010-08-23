@@ -60,7 +60,8 @@ empty_grid(int grid[GRID_ROWS][GRID_COLS]);
 int
 draw_game_playing(int grid[GRID_ROWS][GRID_COLS],
 		  free_blocks *a_blocks,
-		  free_blocks *next_a_blocks);
+		  free_blocks *next_a_blocks,
+		  int score);
 
 int
 draw_game_paused();

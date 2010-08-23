@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include "game.h"
 #include "graphics.h"
+#include "animations.h"
 
 // The active blocks
 free_blocks *a_blocks = NULL;
@@ -225,11 +226,11 @@ int
 update_grid(int grid[GRID_ROWS][GRID_COLS],
 	    FPSmanager *fpsmanager)
 {
-    Uint32 timer, interval;
     int cleared_rows[4]; // Keeps track of the complete rows
     int cleared_row, grid_changed; // Useful bools
     int counter;
     int new_grid[GRID_ROWS][GRID_COLS];
+    int score = 0;
 
     // Makes a copy of the old grid to work on
     memcpy(new_grid, grid, sizeof(new_grid));
@@ -263,34 +264,16 @@ update_grid(int grid[GRID_ROWS][GRID_COLS],
     // If 1 or more row were cleared
     if (grid_changed)
     {
-	// Animate
-	timer = SDL_GetTicks();
-	interval = 200; // Interval between the blinking
-
-	// Displays intermittedly the old grid and the
-	// grid with the rows filled with 0s
-	while (SDL_GetTicks() - timer < interval)
-	{	    
-	    draw_game_playing(new_grid, NULL, next_a_blocks);
-	    SDL_framerateDelay(fpsmanager);
-	}
-	timer = SDL_GetTicks();
-	while (SDL_GetTicks() - timer < interval)
-	{
-	    draw_game_playing(grid, NULL, next_a_blocks);
-	    SDL_framerateDelay(fpsmanager);
-	}
-	timer = SDL_GetTicks();
-	while (SDL_GetTicks() - timer < interval)
-	{
-	    draw_game_playing(new_grid, NULL, next_a_blocks);
-	    SDL_framerateDelay(fpsmanager);
-	}
-
-	// Remove cleared rows
+	// Animation
+	blink_grid(new_grid, grid, fpsmanager);
+	
+	// Remove cleared rows, and calculate score
 	int i;
+	score = 4;
 	for (i = 0; i < counter; i++)
 	{
+	    score *= 2;
+
 	    // Shift the row down, starting from the cleared row
 	    for (r = cleared_rows[i]; r > 0; r--)
 		memcpy(grid[r], grid[r - 1], sizeof(grid[0]));
@@ -300,13 +283,14 @@ update_grid(int grid[GRID_ROWS][GRID_COLS],
 	}
     }
 
-    return(0);
+    return(score);
 }
 
 int
 game_playing(GAME_STATE *game_state,
 	     SDL_Event event,
 	     int grid[GRID_ROWS][GRID_COLS],
+	     int *score,
 	     FPSmanager *fpsmanager)
 {
     while (SDL_PollEvent(&event))
@@ -373,8 +357,10 @@ game_playing(GAME_STATE *game_state,
 	*/
 	if (!move_blocks(grid, DOWN) && enough_time)
 	{
+	    // Put the blocks on the grid
 	    blocks_on_grid(grid);
-	    update_grid(grid, fpsmanager);
+	    // Check if there are some complete rows, and update the score
+	    *score += update_grid(grid, fpsmanager);
 	    // Copy the blocks planned to the active blocks
 	    copy_free_blocks(a_blocks, next_a_blocks);
 	    // Set the right column
@@ -383,10 +369,12 @@ game_playing(GAME_STATE *game_state,
 	    generate_a_blocks(next_a_blocks, rand() % 7);
 	}
 	if (enough_time)
+	{
 	    fall_timer = SDL_GetTicks(); // Reset timer
+	}
     }
 
-    if (!draw_game_playing(grid, a_blocks, next_a_blocks))
+    if (!draw_game_playing(grid, a_blocks, next_a_blocks, *score))
 	return(0);
 
     return(1);

@@ -64,6 +64,7 @@ int
 game_playing(GAME_STATE *game_state,
 	     SDL_Event event,
 	     int grid[GRID_ROWS][GRID_COLS],
+	     int *score,
 	     FPSmanager *fpsmanager);
 
 int

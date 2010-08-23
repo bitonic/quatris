@@ -7,4 +7,9 @@
 #define GRID_COLS 10
 #define GRID_ROWS 20
 
+#define BLINK_INTERVAL 100
+
+#define TIME_SCORE 5
+#define ROW_SCORE 5
+
 #endif

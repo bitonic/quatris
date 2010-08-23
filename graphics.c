@@ -6,12 +6,13 @@ SDL_Color bgr_color = {0, 0, 0};
 
 SDL_Surface *blocks_sprite = NULL; // It will hold the img with the blocks
 SDL_Rect *block_colors[7]; // It will hold the various rects
-                                // for the various colors
+                           // for the various colors
 
 // Fonts
 TTF_Font *inconsolata15;
 TTF_Font *inconsolata28;
 SDL_Color font_color_white = {255, 255, 255};
+SDL_Color font_color_red = {240, 20, 20};
 
 void
 apply_surface(SDL_Surface *source,
@@ -68,14 +69,14 @@ init_graphics()
     inconsolata15 = TTF_OpenFont("files/Inconsolata.ttf", 15);
     if(!inconsolata15)
     {
-	printf("Error inTTF_OpenFont: %s\n", TTF_GetError());
+	printf("Error in TTF_OpenFont: %s\n", TTF_GetError());
 	return(0);
     }
 
     inconsolata28 = TTF_OpenFont("files/Inconsolata.ttf", 28);
     if(!inconsolata28)
     {
-	printf("Error inTTF_OpenFont: %s\n", TTF_GetError());
+	printf("Error in TTF_OpenFont: %s\n", TTF_GetError());
 	return(0);
     }
     
@@ -135,36 +136,51 @@ empty_grid(int grid[GRID_ROWS][GRID_COLS])
 int
 draw_game_playing(int grid[GRID_ROWS][GRID_COLS],
 		  free_blocks *a_blocks,
-		  free_blocks *next_a_blocks)
+		  free_blocks *next_a_blocks,
+		  int score)
 {
-	SDL_FillRect(SDL_GetVideoSurface(), NULL, SDL_MapRGB(SDL_GetVideoSurface()->format, 0, 0, 0));
+    // Clears the screen
+    SDL_FillRect(SDL_GetVideoSurface(), NULL,
+		 SDL_MapRGB(SDL_GetVideoSurface()->format, 0, 0, 0));
+    
+    // Display the grid
+    draw_grid(grid, SDL_GetVideoSurface());
+    
+    if (a_blocks)
+    {
+	// Display active blocks
+	draw_free_blocks(a_blocks, SDL_GetVideoSurface(), GRID_POS_X, GRID_POS_Y);
+    }
 
-	// Display the grid
-	draw_grid(grid, SDL_GetVideoSurface());
+    int grid_right = GRID_POS_X + GRID_COLS * BLOCK_SIZE;
 
-	if (a_blocks)
-	{
-	    // Display active blocks
-	    draw_free_blocks(a_blocks, SDL_GetVideoSurface(), GRID_POS_X, GRID_POS_Y);
-	}
+    if (next_a_blocks)
+    {
+	int x = grid_right + 30;
+	int y = GRID_POS_Y;
+	//Display the next blocks
+	draw_free_blocks(next_a_blocks, SDL_GetVideoSurface(), x, y + 20);
 
-	if (next_a_blocks)
-	{
-	    int x = GRID_POS_X + GRID_COLS * BLOCK_SIZE + 50;
-	    int y = GRID_POS_Y;
-	    //Display the next blocks
-	    draw_free_blocks(next_a_blocks, SDL_GetVideoSurface(), x, y + 20);
+	// Write
+	apply_surface(TTF_RenderText_Shaded(inconsolata15, "Next:", font_color_white, bgr_color),
+		      NULL, SDL_GetVideoSurface(), x, y);
+    }
 
-	    // Write
-	    apply_surface(TTF_RenderText_Shaded(inconsolata15, "Next:", font_color_white, bgr_color),
-			  NULL, SDL_GetVideoSurface(), x, y);
-	}
+    // Display the score
+    apply_surface(TTF_RenderText_Shaded(inconsolata15, "Score:", font_color_white, bgr_color),
+		  NULL, SDL_GetVideoSurface(), grid_right + 150,
+		  GRID_POS_Y);    
+    char sscore[15];
+    sprintf(sscore, "%d", score);
+    apply_surface(TTF_RenderText_Shaded(inconsolata28, sscore, font_color_white, bgr_color),
+		  NULL, SDL_GetVideoSurface(), grid_right + 150,
+		  GRID_POS_Y + 20);
 
-	// Display the screen
-	if (SDL_Flip(SDL_GetVideoSurface()) == -1)
-	    return(0);
+    // Display the screen
+    if (SDL_Flip(SDL_GetVideoSurface()) == -1)
+	return(0);
 
-	return(1);
+    return(1);
 }
 
 int

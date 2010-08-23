@@ -22,7 +22,7 @@ GAME_STATE game_state = SPLASHSCREEN;
 int grid[GRID_ROWS][GRID_COLS]; // The actual grid
 
 // The score
-int *score = 0;
+int score = 0;
 
 int mov_down;
 
@@ -116,6 +116,7 @@ main(int argv, char *argc[])
 	    if (!game_playing(&game_state,
 			      event,
 			      grid,
+			      &score,
 			      fpsmanager))
 		return(1);
 	    break;
