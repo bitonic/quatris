@@ -399,7 +399,7 @@ game_playing(GAME_STATE *game_state,
 	  If we can move down, good, if we can't, generate new
 	  active blocks.
 	*/
-	if (!move_blocks(grid, DOWN) && enough_time)
+	if (!move_blocks(grid, DOWN))
 	{
 	    // Put the blocks on the grid
 	    blocks_on_grid(grid);
