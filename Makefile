@@ -5,15 +5,15 @@ LD_FLAGS = $(shell pkg-config --libs $(SDL_LIBS))
 SOURCES = $(wildcard *.c)
 OBJECTS = $(patsubst %.c, %.o, $(SOURCES))
 
-all: tetris
+all: quatris
 
-tetris: $(OBJECTS)
+quatris: $(OBJECTS)
 	gcc $(LD_FLAGS) -o $@ $?
 
 %.o: %.c
 	gcc -c $(CC_FLAGS) $<
 
 clean:
-	rm -f tetris
+	rm -f quatris
 	rm -f *.o
 
