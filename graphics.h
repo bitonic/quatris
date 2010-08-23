@@ -10,12 +10,13 @@
 // The length of the block side
 #define BLOCK_SIZE 20
 // The position of the grid
-#define GRID_POS_X 40
-#define GRID_POS_Y 40
+#define GRID_POS_X 20
+#define GRID_POS_Y 20
 
 // Colors
 #define GRID_BGR 0x101010FF
 #define GAME_PAUSED_BGR 0x00000000
+#define BLOCKS_LIMIT_COLOR 0xF0F0F0FF
 
 void
 apply_surface(SDL_Surface *source,

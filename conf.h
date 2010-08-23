@@ -1,11 +1,11 @@
 #ifndef _conf_h
 #define _conf_h
 
-#define SCREEN_WIDTH 550
+#define SCREEN_WIDTH 530
 #define SCREEN_HEIGHT 480
 #define SCREEN_BPP 32
 #define GRID_COLS 10
-#define GRID_ROWS 20
+#define GRID_ROWS 22
 
 #define FALL_INTERVAL 700
 #define BLINK_INTERVAL 100

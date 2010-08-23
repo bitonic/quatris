@@ -239,10 +239,9 @@ int
 has_lost(int grid[GRID_ROWS][GRID_COLS])
 {
     int c, r;
-    for (r = 0; r < a_blocks->rows; r++)
-	for (c = 0; c < a_blocks->cols; c++)
-	    if (a_blocks->bs[r][c] && 
-		grid[a_blocks->pos.row + r][a_blocks->pos.col + c])
+    for (r = 0; r < 2; r++)
+	for (c = 0; c < GRID_COLS; c++)
+	    if (grid[r][c])
 		return(1);
     return(0);
 }

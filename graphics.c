@@ -96,11 +96,18 @@ void
 draw_grid(int grid[GRID_ROWS][GRID_COLS],
 	  SDL_Surface *dest)
 {
+    int grid_width = GRID_POS_X + GRID_COLS * BLOCK_SIZE;
+
     // Draw the background
     boxColor(dest, GRID_POS_X, GRID_POS_Y,
-	     GRID_POS_X + GRID_COLS * BLOCK_SIZE,
+	     grid_width,
 	     GRID_POS_Y + GRID_ROWS * BLOCK_SIZE,
 	     GRID_BGR);
+
+    // Draw the line after the first two rows
+    hlineColor(dest, GRID_POS_X, grid_width,
+	       GRID_POS_Y + BLOCK_SIZE * 2,
+	       BLOCKS_LIMIT_COLOR);
 
     int c, r;
     for (c = 0; c < GRID_COLS; c++)
