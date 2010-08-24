@@ -8,6 +8,9 @@ SDL_Surface *blocks_sprite = NULL; // It will hold the img with the blocks
 SDL_Rect *block_colors[8]; // It will hold the various rects
                            // for the various colors
 
+// Images
+SDL_Surface *splashscreen = NULL;
+
 // Fonts
 TTF_Font *inconsolata15;
 TTF_Font *inconsolata28;
@@ -63,6 +66,9 @@ init_graphics()
 	block_colors[i]->w = BLOCK_SIZE;
 	block_colors[i]->h = BLOCK_SIZE;
     }
+
+    // Splashscreen / paused screen
+    splashscreen = load_image("files/splashscreen.png");
 
     // Init fonts
 
@@ -201,11 +207,12 @@ draw_game_playing(int grid[GRID_ROWS][GRID_COLS],
     return(1);
 }
 
-int
-draw_game_paused()
+int 
+draw_splashscreen()
 {
+    apply_surface(splashscreen, NULL, SDL_GetVideoSurface(), 0, 0);
+
     if (SDL_Flip(SDL_GetVideoSurface()) == -1)
 	return(0);
-
     return(1);
 }

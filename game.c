@@ -457,7 +457,7 @@ game_paused(GAME_STATE *game_state,
 	}
     }
 
-    if (!draw_game_paused())
+    if (!draw_splashscreen())
 	return(0);
 
     return(1);

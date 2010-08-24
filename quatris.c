@@ -102,6 +102,8 @@ main(int argv, char *argc[])
 	    }
 	}
 
+	draw_splashscreen();
+
 	SDL_framerateDelay(fpsmanager);
     }
 
