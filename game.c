@@ -226,7 +226,7 @@ rotate_blocks(int grid[GRID_ROWS][GRID_COLS],
 			grid[new_blocks->pos.row + c][new_blocks->pos.col + new_blocks->cols - 1 - r])
 			return(0);
 
-		new_blocks->bs[new_blocks->rows - 1 - c][r] = a_blocks->bs[r][c];
+//		new_blocks->bs[new_blocks->rows - 1 - c][r] = a_blocks->bs[r][c];
 	    }
 
     memcpy(a_blocks, new_blocks, sizeof(free_blocks));
