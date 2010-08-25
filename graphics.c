@@ -11,6 +11,8 @@ SDL_Rect *block_colors[8]; // It will hold the various rects
 // Images
 SDL_Surface *splashscreen = NULL;
 SDL_Surface *game_bgr = NULL;
+SDL_Surface *paused = NULL;
+SDL_Surface *pressanykey = NULL;
 
 // Fonts
 TTF_Font *inconsolata15;
@@ -73,6 +75,11 @@ init_graphics()
 
     // Main game
     game_bgr = load_image("files/game.png");
+
+    // paused
+    paused = load_image("files/paused.png");
+
+    pressanykey = load_image("files/pressanykey.png");
 
     // Init fonts
 
@@ -209,6 +216,20 @@ int
 draw_splashscreen()
 {
     apply_surface(splashscreen, NULL, SDL_GetVideoSurface(), 0, 0);
+
+    apply_surface(pressanykey, NULL, SDL_GetVideoSurface(), 128, 150);
+
+    if (SDL_Flip(SDL_GetVideoSurface()) == -1)
+	return(0);
+    return(1);
+}
+
+int
+draw_game_paused()
+{
+    apply_surface(splashscreen, NULL, SDL_GetVideoSurface(), 0, 0);
+
+    apply_surface(paused, NULL, SDL_GetVideoSurface(), 315, 125);
 
     if (SDL_Flip(SDL_GetVideoSurface()) == -1)
 	return(0);

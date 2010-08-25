@@ -37,8 +37,13 @@ init_game()
 }
 
 void
-start_game()
+start_game(int grid[GRID_ROWS][GRID_COLS])
 {
+    // Empty the grid
+    int r;
+    for (r = 0; r < GRID_ROWS; r++)
+	memset(grid[r], 0, sizeof(grid[r])); // Empty the grid
+
     // Generate the blocks
     generate_a_blocks(a_blocks, rand() % 7);
     generate_a_blocks(next_a_blocks, rand() % 7);
@@ -364,6 +369,10 @@ game_playing(GAME_STATE *game_state,
 	    case SDLK_p:
 		*game_state = PAUSED;
 		break;
+	    case SDLK_r:
+		start_game(grid);
+		*game_state = SPLASHSCREEN;
+		return(1);
 	    default:
 		break;
 	    }
@@ -457,7 +466,7 @@ game_paused(GAME_STATE *game_state,
 	}
     }
 
-    if (!draw_splashscreen())
+    if (!draw_game_paused())
 	return(0);
 
     return(1);
@@ -469,7 +478,6 @@ game_lost(int grid[GRID_ROWS][GRID_COLS],
 	  SDL_Event event)
 
 {
-    int r;
     while (SDL_PollEvent(&event))
     {
 	switch (event.type)
@@ -477,9 +485,7 @@ game_lost(int grid[GRID_ROWS][GRID_COLS],
 	case SDL_QUIT:
 	    *game_state = QUIT;
 	case SDL_KEYDOWN:
-	    for (r = 0; r < GRID_ROWS; r++)
-		memset(grid[r], 0, sizeof(grid[r])); // Empty the grid
-	    start_game();
+	    start_game(grid);
 	    *game_state = PLAYING;
 	}
     }

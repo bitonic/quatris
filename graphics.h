@@ -68,4 +68,7 @@ draw_game_playing(int grid[GRID_ROWS][GRID_COLS],
 int
 draw_splashscreen();
 
+int
+draw_game_paused();
+
 #endif

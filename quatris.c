@@ -85,35 +85,32 @@ main(int argv, char *argc[])
     if (!init())
 	return(1);
 
-    // Display the splash screen
-    while (game_state == SPLASHSCREEN)
-    {
-	while (SDL_PollEvent(&event))
-	{
-	    switch (event.type)
-	    {
-	    case SDL_QUIT:
-		return(0);
-	    case SDL_KEYDOWN:
-		game_state = PLAYING;
-		break;
-	    default:
-		break;
-	    }
-	}
-
-	draw_splashscreen();
-
-	SDL_framerateDelay(fpsmanager);
-    }
-
     // Start the game
-    start_game();
+    start_game(grid);
 
     while(game_state != QUIT)
     {
 	switch (game_state)
 	{
+	case SPLASHSCREEN:
+	    while (SDL_PollEvent(&event))
+	    {
+		switch (event.type)
+		{
+		case SDL_QUIT:
+		    return(0);
+		case SDL_KEYDOWN:
+		    game_state = PLAYING;
+		    break;
+		default:
+		    break;
+		}
+	    }
+
+	    draw_splashscreen();
+
+	    SDL_framerateDelay(fpsmanager);
+	    break;
 	case PLAYING:
 	    if (!game_playing(&game_state,
 			      event,

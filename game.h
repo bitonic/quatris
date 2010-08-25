@@ -17,7 +17,7 @@ void
 init_game();
 
 void
-start_game();
+start_game(int grid[GRID_ROWS][GRID_COLS]);
 
 /*
   GAME OPERATIONS
