@@ -370,7 +370,6 @@ game_playing(GAME_STATE *game_state,
 		*game_state = PAUSED;
 		break;
 	    case SDLK_r:
-		start_game(grid);
 		*game_state = SPLASHSCREEN;
 		return(1);
 	    default:
@@ -485,7 +484,6 @@ game_lost(int grid[GRID_ROWS][GRID_COLS],
 	case SDL_QUIT:
 	    *game_state = QUIT;
 	case SDL_KEYDOWN:
-	    start_game(grid);
 	    *game_state = PLAYING;
 	}
     }
