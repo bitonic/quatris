@@ -10,6 +10,7 @@ SDL_Rect *block_colors[8]; // It will hold the various rects
 
 // Images
 SDL_Surface *splashscreen = NULL;
+SDL_Surface *game_bgr = NULL;
 
 // Fonts
 TTF_Font *inconsolata15;
@@ -43,7 +44,7 @@ load_image(char *filename)
 
     if (loadedImage != NULL)
     {
-	optimizedImage = SDL_DisplayFormat(loadedImage);
+	optimizedImage = SDL_DisplayFormatAlpha(loadedImage);
 
 	SDL_FreeSurface(loadedImage);
     }
@@ -69,6 +70,9 @@ init_graphics()
 
     // Splashscreen / paused screen
     splashscreen = load_image("files/splashscreen.png");
+
+    // Main game
+    game_bgr = load_image("files/game.png");
 
     // Init fonts
 
@@ -156,6 +160,10 @@ draw_game_playing(int grid[GRID_ROWS][GRID_COLS],
     // Clears the screen
     SDL_FillRect(SDL_GetVideoSurface(), NULL,
 		 SDL_MapRGB(SDL_GetVideoSurface()->format, 0, 0, 0));
+
+    // Print the background
+    apply_surface(game_bgr, NULL, SDL_GetVideoSurface(), 0, 0);
+
     
     // Display the grid
     draw_grid(grid, SDL_GetVideoSurface());
@@ -174,16 +182,9 @@ draw_game_playing(int grid[GRID_ROWS][GRID_COLS],
 	int y = GRID_POS_Y;
 	//Display the next blocks
 	draw_free_blocks(next_a_blocks, SDL_GetVideoSurface(), x, y + 20);
-
-	// Write
-	apply_surface(TTF_RenderText_Shaded(inconsolata15, "Next:", font_color_white, bgr_color),
-		      NULL, SDL_GetVideoSurface(), x, y);
     }
 
     // Display the score
-    apply_surface(TTF_RenderText_Shaded(inconsolata15, "Score:", font_color_white, bgr_color),
-		  NULL, SDL_GetVideoSurface(), grid_right + 120,
-		  GRID_POS_Y);    
     char sscore[15];
     sprintf(sscore, "%d", score);
     apply_surface(TTF_RenderText_Shaded(inconsolata28, sscore, font_color_white, bgr_color),
@@ -191,9 +192,6 @@ draw_game_playing(int grid[GRID_ROWS][GRID_COLS],
 		  GRID_POS_Y + 20);
 
     // Display the level
-    apply_surface(TTF_RenderText_Shaded(inconsolata15, "Level:", font_color_white, bgr_color),
-		  NULL, SDL_GetVideoSurface(), grid_right + 220,
-		  GRID_POS_Y);    
     char slevel[3];
     sprintf(slevel, "%d", level);
     apply_surface(TTF_RenderText_Shaded(inconsolata28, slevel, font_color_white, bgr_color),

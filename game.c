@@ -355,10 +355,10 @@ game_playing(GAME_STATE *game_state,
 		*/
 		mov_down = 1;
 		break;
-	    case SDLK_UP:
+	    case SDLK_a:
 		rotate_blocks(grid, 1);
 		break;
-	    case SDLK_SPACE:
+	    case SDLK_d:
 		rotate_blocks(grid, 0);
 		break;
 	    case SDLK_p:
