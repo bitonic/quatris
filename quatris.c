@@ -83,12 +83,12 @@ main(int argv, char *argc[])
 
     // Display the splashscreen for 2 secs
     draw_splashscreen(0);
+    // Delay
+    SDL_Delay(2000);
     // Clear events
     while(SDL_PollEvent(&event))
 	if (event.type == SDL_QUIT)
 	    return(0);
-    // Delay
-    SDL_Delay(2000);
 
     while(game_state != QUIT)
     {
