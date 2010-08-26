@@ -500,7 +500,7 @@ game_lost(int grid[GRID_ROWS][GRID_COLS],
 	case SDL_QUIT:
 	    *game_state = QUIT;
 	case SDL_KEYDOWN:
-	    *game_state = PLAYING;
+	    *game_state = SPLASHSCREEN;
 	}
     }
 
