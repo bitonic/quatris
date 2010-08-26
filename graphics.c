@@ -50,13 +50,12 @@ load_image(char *filename)
 
 	SDL_FreeSurface(loadedImage);
 	
-	return(optimizedImage);
     }
     else
     {
 	fprintf(stderr, "Unable to open the file \"%s\".", filename);
-	return(-1);
     }
+    return(optimizedImage);
 }
 
 int
@@ -64,7 +63,7 @@ init_graphics()
 {
     blocks_sprite = load_image("files/blocks.png"); // Load the sprite with the blocks
 
-    if (blocks_sprite == -1)
+    if (blocks_sprite == NULL)
 	return(0);
 
     // Loads the various rects into the blocks_types array
@@ -80,21 +79,21 @@ init_graphics()
 
     // Splashscreen / paused screen
     splashscreen = load_image("files/splashscreen.png");
-    if (splashscreen == -1)
+    if (splashscreen == NULL)
 	return(0);
 
     // Main game
     game_bgr = load_image("files/game.png");
-    if (game_bgr == -1)
+    if (game_bgr == NULL)
 	return(0);
 
     // paused
     paused = load_image("files/paused.png");
-    if (paused == -1)
+    if (paused == NULL)
 	return(0);
 
     pressanykey = load_image("files/pressanykey.png");
-    if (pressanykey == -1)
+    if (pressanykey == NULL)
 	return(0);
 
     // Init fonts
