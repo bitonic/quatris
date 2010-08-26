@@ -13,14 +13,15 @@ free_blocks *next_a_blocks = NULL;
 Uint32 fall_timer;
 Uint32 fall_interval;
 
-int mov_down;
-
 // The level of the game
 int level = 1;
 
 // The timer for the leveling up
 Uint32 level_timer;
 Uint32 level_interval = LEVEL_INTERVAL;
+
+// bools to control the user's will
+int mov_down, drop;
 
 void
 init_game()
@@ -51,11 +52,11 @@ start_game(int grid[GRID_ROWS][GRID_COLS])
     // Set the right column
     a_blocks->pos.col = GRID_COLS / 2 - a_blocks->cols / 2;
 
+    mov_down = 0;
+    drop = 0;
+
     // Start the timer
     fall_timer = SDL_GetTicks();
-
-    // Set the down movement to 0
-    mov_down = 0;
 
     // Start the level timer
     level_timer = SDL_GetTicks();
@@ -109,6 +110,13 @@ move_blocks(int grid[GRID_ROWS][GRID_COLS],
 	break;
     }
     return(1);
+}
+
+void
+drop_blocks(int grid[GRID_ROWS][GRID_COLS])
+{
+    while (move_blocks(grid, DOWN))
+	;
 }
 
 void
@@ -231,7 +239,6 @@ rotate_blocks(int grid[GRID_ROWS][GRID_COLS],
 			grid[new_blocks->pos.row + c][new_blocks->pos.col + new_blocks->cols - 1 - r])
 			return(0);
 
-//		new_blocks->bs[new_blocks->rows - 1 - c][r] = a_blocks->bs[r][c];
 	    }
 
     memcpy(a_blocks, new_blocks, sizeof(free_blocks));
@@ -335,6 +342,7 @@ game_playing(GAME_STATE *game_state,
 	     int *score,
 	     FPSmanager *fpsmanager)
 {
+
     while (SDL_PollEvent(&event))
     {
 	switch (event.type)
@@ -372,6 +380,11 @@ game_playing(GAME_STATE *game_state,
 	    case SDLK_r:
 		*game_state = SPLASHSCREEN;
 		return(1);
+	    case SDLK_SPACE:
+		// Drop the piece
+		drop_blocks(grid);
+		drop = 1;
+		break;
 	    default:
 		break;
 	    }
@@ -397,11 +410,12 @@ game_playing(GAME_STATE *game_state,
     }
 
     /*
-      If the user is pressing the down key, or if
-      enough time has passed, move the pieces down.
+      If the user is pressing the down key, if
+      enough time has passed, or if we have dropped the
+      blocks, move the pieces down.
     */
     int enough_time = SDL_GetTicks() - fall_timer > fall_interval;
-    if (enough_time || mov_down)
+    if (enough_time || mov_down || drop)
     {
 	/*
 	  If we can move down, good, if we can't, generate new
@@ -440,6 +454,8 @@ game_playing(GAME_STATE *game_state,
 	{
 	    fall_timer = SDL_GetTicks(); // Reset timer
 	}
+
+	drop = 0; // set drop to 0 again
     }
 
     if (!draw_game_playing(grid, a_blocks, next_a_blocks, *score, level))
