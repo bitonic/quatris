@@ -81,6 +81,14 @@ main(int argv, char *argc[])
     // Start the game
     start_game(grid);
 
+    // Display the splashscreen for 2 secs
+    draw_splashscreen();
+    // Clear events
+    while(SDL_PollEvent(&event))
+	;
+    // Delay
+    SDL_Delay(2000);
+
     while(game_state != QUIT)
     {
 	switch (game_state)
