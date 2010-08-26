@@ -384,6 +384,8 @@ game_playing(GAME_STATE *game_state,
 		// Drop the piece
 		drop_blocks(grid);
 		drop = 1;
+		// This is to avoid flickerings and other nasty things
+		draw_game_playing(grid, a_blocks, next_a_blocks, *score, level);
 		break;
 	    default:
 		break;
