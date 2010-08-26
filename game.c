@@ -503,6 +503,17 @@ game_lost(int grid[GRID_ROWS][GRID_COLS],
     
     *game_state = SPLASHSCREEN;
 
+    // Clear events
+    while (SDL_PollEvent(&event))
+    {
+	switch (event.type)
+	{
+	case SDL_QUIT:
+	    *game_state = QUIT;
+	    break;
+	}
+    }
+
     return(1);
 }
 

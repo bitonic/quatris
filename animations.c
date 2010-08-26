@@ -51,4 +51,6 @@ game_over(int grid[GRID_ROWS][GRID_COLS],
 	SDL_Flip(SDL_GetVideoSurface());
 	SDL_framerateDelay(fpsmanager);
     }
+
+    SDL_Delay(700);
 }
