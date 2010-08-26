@@ -369,6 +369,7 @@ game_playing(GAME_STATE *game_state,
 		mov_down = 1;
 		break;
 	    case SDLK_a:
+	    case SDLK_UP:
 		rotate_blocks(grid, 1);
 		break;
 	    case SDLK_d:
