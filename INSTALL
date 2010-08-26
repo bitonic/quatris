@@ -1,0 +1,7 @@
+First install the SDL library and the following extension libraries:
+- SDL_image
+- SDL_ttf
+- SDL_gfx
+
+Then you should be able to compile with a simple "make".
+If you have difficulties compiling, check the Makefile.
