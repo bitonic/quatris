@@ -49,15 +49,23 @@ load_image(char *filename)
 	optimizedImage = SDL_DisplayFormatAlpha(loadedImage);
 
 	SDL_FreeSurface(loadedImage);
+	
+	return(optimizedImage);
     }
-
-    return(optimizedImage);
+    else
+    {
+	fprintf(stderr, "Unable to open the file \"%s\".", filename);
+	return(-1);
+    }
 }
 
 int
 init_graphics()
 {
     blocks_sprite = load_image("files/blocks.png"); // Load the sprite with the blocks
+
+    if (blocks_sprite == -1)
+	return(0);
 
     // Loads the various rects into the blocks_types array
     int i;
@@ -72,28 +80,36 @@ init_graphics()
 
     // Splashscreen / paused screen
     splashscreen = load_image("files/splashscreen.png");
+    if (splashscreen == -1)
+	return(0);
 
     // Main game
     game_bgr = load_image("files/game.png");
+    if (game_bgr == -1)
+	return(0);
 
     // paused
     paused = load_image("files/paused.png");
+    if (paused == -1)
+	return(0);
 
     pressanykey = load_image("files/pressanykey.png");
+    if (pressanykey == -1)
+	return(0);
 
     // Init fonts
 
     inconsolata15 = TTF_OpenFont("files/Inconsolata.ttf", 15);
     if(!inconsolata15)
     {
-	printf("Error in TTF_OpenFont: %s\n", TTF_GetError());
+	fprintf(stderr, "Error in TTF_OpenFont: %s\n", TTF_GetError());
 	return(0);
     }
 
     inconsolata28 = TTF_OpenFont("files/Inconsolata.ttf", 28);
     if(!inconsolata28)
     {
-	printf("Error in TTF_OpenFont: %s\n", TTF_GetError());
+	fprintf(stderr, "Error in TTF_OpenFont: %s\n", TTF_GetError());
 	return(0);
     }
     
