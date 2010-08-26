@@ -377,7 +377,8 @@ game_playing(GAME_STATE *game_state,
 		break;
 	    case SDLK_p:
 		*game_state = PAUSED;
-		break;
+		draw_game_paused();
+		return(1);
 	    case SDLK_r:
 		*game_state = SPLASHSCREEN;
 		return(1);
@@ -484,9 +485,6 @@ game_paused(GAME_STATE *game_state,
 	}
     }
 
-    if (!draw_game_paused())
-	return(0);
-
     return(1);
 }
 
@@ -496,16 +494,14 @@ game_lost(int grid[GRID_ROWS][GRID_COLS],
 	  SDL_Event event)
 
 {
-    while (SDL_PollEvent(&event))
-    {
-	switch (event.type)
-	{
-	case SDL_QUIT:
-	    *game_state = QUIT;
-	case SDL_KEYDOWN:
-	    *game_state = SPLASHSCREEN;
-	}
-    }
+    // Display image
+    if (!draw_game_lost())
+	return(0);
+
+    //Wait
+    SDL_Delay(4000);
+    
+    *game_state = SPLASHSCREEN;
 
     return(1);
 }

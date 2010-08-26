@@ -13,6 +13,7 @@ SDL_Surface *splashscreen = NULL;
 SDL_Surface *game_bgr = NULL;
 SDL_Surface *paused = NULL;
 SDL_Surface *pressanykey = NULL;
+SDL_Surface *gameover = NULL;
 
 // Fonts
 TTF_Font *inconsolata15;
@@ -94,6 +95,10 @@ init_graphics()
 
     pressanykey = load_image("files/pressanykey.png");
     if (pressanykey == NULL)
+	return(0);
+
+    gameover = load_image("files/gameover.png");
+    if (gameover == NULL)
 	return(0);
 
     // Init fonts
@@ -253,6 +258,16 @@ draw_game_paused()
     apply_surface(splashscreen, NULL, SDL_GetVideoSurface(), 0, 0);
 
     apply_surface(paused, NULL, SDL_GetVideoSurface(), 315, 125);
+
+    if (SDL_Flip(SDL_GetVideoSurface()) == -1)
+	return(0);
+    return(1);
+}
+
+int
+draw_game_lost()
+{
+    apply_surface(gameover, NULL, SDL_GetVideoSurface(), 0, 0);
 
     if (SDL_Flip(SDL_GetVideoSurface()) == -1)
 	return(0);

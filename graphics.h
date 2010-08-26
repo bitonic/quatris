@@ -72,4 +72,7 @@ draw_splashscreen();
 int
 draw_game_paused();
 
+int
+draw_game_lost();
+
 #endif
