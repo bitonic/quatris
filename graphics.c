@@ -241,12 +241,13 @@ draw_game_playing(int grid[GRID_ROWS][GRID_COLS],
 }
 
 int 
-draw_splashscreen()
+draw_splashscreen(int anykey)
 {
     apply_surface(splashscreen, NULL, SDL_GetVideoSurface(), 0, 0);
 
-    apply_surface(pressanykey, NULL, SDL_GetVideoSurface(), 128, 150);
-
+    if (anykey)
+	apply_surface(pressanykey, NULL, SDL_GetVideoSurface(), 128, 150);
+	
     if (SDL_Flip(SDL_GetVideoSurface()) == -1)
 	return(0);
     return(1);

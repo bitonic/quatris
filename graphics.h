@@ -67,7 +67,7 @@ draw_game_playing(int grid[GRID_ROWS][GRID_COLS],
 		  int level);
 
 int
-draw_splashscreen();
+draw_splashscreen(int anykey);
 
 int
 draw_game_paused();

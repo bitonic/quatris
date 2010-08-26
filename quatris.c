@@ -82,10 +82,11 @@ main(int argv, char *argc[])
     start_game(grid);
 
     // Display the splashscreen for 2 secs
-    draw_splashscreen();
+    draw_splashscreen(0);
     // Clear events
     while(SDL_PollEvent(&event))
-	;
+	if (event.type == SDL_QUIT)
+	    return(0);
     // Delay
     SDL_Delay(2000);
 
@@ -110,7 +111,7 @@ main(int argv, char *argc[])
 		}
 	    }
 
-	    draw_splashscreen();
+	    draw_splashscreen(1);
 
 	    SDL_framerateDelay(fpsmanager);
 	    break;
