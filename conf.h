@@ -16,7 +16,7 @@
 #define SCORE_TRIPLE 300
 #define SCORE_TETRIS 1200
 
-#define LEVEL_INTERVAL 60000 // One minute
-#define MAX_LEVEL 10
+#define LINES_PER_LEVEL 10
+#define MAX_LEVEL 15
 
 #endif

@@ -13,12 +13,10 @@ free_blocks *next_a_blocks = NULL;
 Uint32 fall_timer;
 Uint32 fall_interval;
 
+// The number of cleared lines
+int lines = 0;
 // The level of the game
 int level = 1;
-
-// The timer for the leveling up
-Uint32 level_timer;
-Uint32 level_interval = LEVEL_INTERVAL;
 
 // bools to control the user's will
 int mov_down, drop;
@@ -45,6 +43,9 @@ start_game(int grid[GRID_ROWS][GRID_COLS])
     for (r = 0; r < GRID_ROWS; r++)
 	memset(grid[r], 0, sizeof(grid[r])); // Empty the grid
 
+    // Set cleared lines to 0
+    lines = 0;
+
     // Generate the blocks
     generate_a_blocks(a_blocks, rand() % 7);
     generate_a_blocks(next_a_blocks, rand() % 7);
@@ -57,9 +58,6 @@ start_game(int grid[GRID_ROWS][GRID_COLS])
 
     // Start the timer
     fall_timer = SDL_GetTicks();
-
-    // Start the level timer
-    level_timer = SDL_GetTicks();
 }
 
 int
@@ -291,7 +289,7 @@ update_grid(int grid[GRID_ROWS][GRID_COLS],
 	{
 	    grid_changed = 1;
 	    cleared_rows[counter] = r; // Remember it
-	    counter++;
+	    counter++; lines++;
 	    // Set it to 0 in the grid copy for the animation
 	    memset(new_grid[r], 0, sizeof(new_grid[r]));
 	}
@@ -405,12 +403,12 @@ game_playing(GAME_STATE *game_state,
 	    break;
 	}
     }
-    // If enough time has passed, level up
-    if (SDL_GetTicks() - level_timer > LEVEL_INTERVAL && level < MAX_LEVEL)
+    
+    // Level up every 10 lines
+    if (lines / LINES_PER_LEVEL + 1 > level)
     {
 	level++;
 	fall_interval = FALL_INTERVAL - (FALL_INTERVAL / MAX_LEVEL * level);
-	level_timer = SDL_GetTicks();
     }
 
     /*
