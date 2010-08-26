@@ -31,6 +31,9 @@ load_image(char *filename);
 int
 init_graphics();
 
+void
+clean_up_graphics();
+
 /*
  * These must be in the same order as in the 
  * blocks.png image

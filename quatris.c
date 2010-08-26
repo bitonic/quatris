@@ -72,13 +72,6 @@ init()
     return(1);
 }
 
-void
-clean_up()
-{
-    
-    SDL_Quit();
-}
-
 int
 main(int argv, char *argc[])
 {
@@ -137,7 +130,9 @@ main(int argv, char *argc[])
 	SDL_framerateDelay(fpsmanager);
     }
 
-    clean_up();
+    clean_up_graphics();
+
+    SDL_Quit();
 
     return(0);
 }

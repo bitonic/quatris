@@ -101,6 +101,21 @@ init_graphics()
 }
 
 void
+clean_up_graphics()
+{
+    // Frees everything
+
+    SDL_FreeSurface(splashscreen);
+    SDL_FreeSurface(game_bgr);
+    SDL_FreeSurface(paused);
+    SDL_FreeSurface(pressanykey);
+    SDL_FreeSurface(blocks_sprite);
+
+    TTF_CloseFont(inconsolata15);
+    TTF_CloseFont(inconsolata28);
+}
+
+void
 draw_block(SDL_Rect *color,
 	   SDL_Surface *dest,
 	   int x,
