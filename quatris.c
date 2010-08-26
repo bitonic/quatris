@@ -95,6 +95,7 @@ main(int argv, char *argc[])
 		case SDL_KEYDOWN:
 		    game_state = PLAYING;
 		    start_game(grid);
+		    score = 0;
 		    break;
 		default:
 		    break;
