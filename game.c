@@ -217,25 +217,31 @@ rotate_blocks(int grid[GRID_ROWS][GRID_COLS],
 	for (c = 0; c < a_blocks->cols; c++)
 	    if (clockwise)
 	    {
+		new_blocks->bs[c][new_blocks->cols - 1 - r] = a_blocks->bs[r][c];
 		// Check that there is no collision
-		if (new_blocks->bs[c][new_blocks->cols - 1 - r] = a_blocks->bs[r][c])
+		if (a_blocks->bs[r][c])
+		{
 		    if (new_blocks->pos.row + new_blocks->rows - 1 - c >= GRID_ROWS ||
 			new_blocks->pos.row + new_blocks->rows - 1 - c < 0 ||
 			new_blocks->pos.col + r >= GRID_COLS ||
 			new_blocks->pos.col + r < 0 ||
 			grid[new_blocks->pos.row + new_blocks->rows - 1 - c][new_blocks->pos.col + r])
 			return(0);
+		}
 	    }
 	    else
 	    {
+		new_blocks->bs[new_blocks->rows - 1 - c][r] = a_blocks->bs[r][c];
 		// Check that there is no collision
-		if (new_blocks->bs[new_blocks->rows - 1 - c][r] = a_blocks->bs[r][c])
+		if (a_blocks->bs[r][c])
+		{
 		    if (new_blocks->pos.row + c >= GRID_ROWS ||
 			new_blocks->pos.row + c < 0 ||
 			new_blocks->pos.col + new_blocks->cols - 1 - r >= GRID_COLS ||
 			new_blocks->pos.col + new_blocks->cols - 1 - r < 0 ||
 			grid[new_blocks->pos.row + c][new_blocks->pos.col + new_blocks->cols - 1 - r])
 			return(0);
+		}
 
 	    }
 
