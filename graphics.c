@@ -209,29 +209,27 @@ draw_game_playing(int grid[GRID_ROWS][GRID_COLS],
 	draw_free_blocks(a_blocks, SDL_GetVideoSurface(), GRID_POS_X, GRID_POS_Y);
     }
 
-    int grid_right = GRID_POS_X + GRID_COLS * BLOCK_SIZE;
+    int x = GRID_POS_X + GRID_COLS * BLOCK_SIZE + 35;
 
     if (next_a_blocks)
     {
-	int x = grid_right + 30;
-	int y = GRID_POS_Y;
 	//Display the next blocks
-	draw_free_blocks(next_a_blocks, SDL_GetVideoSurface(), x, y + 20);
+	draw_free_blocks(next_a_blocks, SDL_GetVideoSurface(), x, GRID_POS_Y + 25);
     }
 
     // Display the score
     char sscore[15];
     sprintf(sscore, "%d", score);
     apply_surface(TTF_RenderText_Shaded(inconsolata28, sscore, font_color_white, bgr_color),
-		  NULL, SDL_GetVideoSurface(), grid_right + 120,
-		  GRID_POS_Y + 20);
+		  NULL, SDL_GetVideoSurface(), x,
+		  GRID_POS_Y + 115);
 
     // Display the level
     char slevel[3];
     sprintf(slevel, "%d", level);
     apply_surface(TTF_RenderText_Shaded(inconsolata28, slevel, font_color_white, bgr_color),
-		  NULL, SDL_GetVideoSurface(), grid_right + 220,
-		  GRID_POS_Y + 20);    
+		  NULL, SDL_GetVideoSurface(), x,
+		  GRID_POS_Y + 215);    
 
     // Display the screen
     if (SDL_Flip(SDL_GetVideoSurface()) == -1)
