@@ -5,8 +5,22 @@
 #include "SDL/SDL_image.h"
 #include "SDL/SDL_framerate.h"
 #include "SDL/SDL_ttf.h"
-#include "conf.h"
 #include "blocks.h"
+
+// Defines..
+#define GRID_COLS 10
+#define GRID_ROWS 22
+
+#define DROP_SCORE 6
+#define SCORE_SINGLE 40
+#define SCORE_DOUBLE 100
+#define SCORE_TRIPLE 300
+#define SCORE_TETRIS 1200
+
+#define FALL_INTERVAL 700
+
+#define LINES_PER_LEVEL 10
+#define MAX_LEVEL 15
 
 // The game state
 typedef enum {

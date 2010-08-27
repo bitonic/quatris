@@ -2,7 +2,8 @@
 #define _animations_h
 
 #include "SDL/SDL_framerate.h"
-#include "conf.h"
+
+#define BLINK_INTERVAL 100
 
 void
 blink_grid(int grid1[GRID_ROWS][GRID_COLS],

@@ -4,8 +4,11 @@
 #include "SDL/SDL.h"
 #include "SDL/SDL_image.h"
 #include "SDL/SDL_ttf.h"
-#include "conf.h"
 #include "blocks.h"
+
+#define SCREEN_WIDTH 530
+#define SCREEN_HEIGHT 480
+#define SCREEN_BPP 32
 
 // The length of the block side
 #define BLOCK_SIZE 20

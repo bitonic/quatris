@@ -3,7 +3,6 @@
 #include "SDL/SDL.h"
 #include "SDL/SDL_framerate.h"
 #include "SDL/SDL_ttf.h"
-#include "conf.h"
 #include "game.h"
 #include "graphics.h"
 
