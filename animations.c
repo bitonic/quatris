@@ -1,6 +1,7 @@
 #include "SDL/SDL.h"
 #include "SDL/SDL_framerate.h"
 #include "graphics.h"
+#include "animations.h"
 
 void
 blink_grid(int grid1[GRID_ROWS][GRID_COLS],

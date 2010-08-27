@@ -5,6 +5,7 @@
 #include "SDL/SDL_image.h"
 #include "SDL/SDL_ttf.h"
 #include "blocks.h"
+#include "game.h"
 
 #define SCREEN_WIDTH 530
 #define SCREEN_HEIGHT 480
@@ -18,6 +19,17 @@
 
 // Colors
 #define GRID_BGR 0x101010FF
+
+
+/*
+ * These must be in the same order as in the 
+ * blocks.png image
+ */
+typedef enum {
+    CYAN = 1, BLUE, ORANGE, YELLOW,
+    GREEN, PURPLE, RED, GREY
+} BLOCK_COLORS;
+
 
 void
 apply_surface(SDL_Surface *source,
@@ -34,15 +46,6 @@ init_graphics();
 
 void
 clean_up_graphics();
-
-/*
- * These must be in the same order as in the 
- * blocks.png image
- */
-typedef enum {
-    CYAN = 1, BLUE, ORANGE, YELLOW,
-    GREEN, PURPLE, RED, GREY
-} BLOCK_COLORS;
 
 void
 draw_block(SDL_Rect *type,

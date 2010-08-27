@@ -133,58 +133,58 @@ generate_a_blocks(free_blocks *f_blocks,
     case I:
 	f_blocks->rows = 1;
 	f_blocks->cols = 4;
-	f_blocks->bs[0][0] = 1;
-	f_blocks->bs[0][1] = 1;
-	f_blocks->bs[0][2] = 1;
-	f_blocks->bs[0][3] = 1;
+	f_blocks->bs[0][0] = CYAN;
+	f_blocks->bs[0][1] = CYAN;
+	f_blocks->bs[0][2] = CYAN;
+	f_blocks->bs[0][3] = CYAN;
 	break;
     case J:
 	f_blocks->rows = 2;
 	f_blocks->cols = 3;
-	f_blocks->bs[0][0] = 2;
-	f_blocks->bs[0][1] = 2;
-	f_blocks->bs[0][2] = 2;
-	f_blocks->bs[1][2] = 2;
+	f_blocks->bs[0][0] = BLUE;
+	f_blocks->bs[0][1] = BLUE;
+	f_blocks->bs[0][2] = BLUE;
+	f_blocks->bs[1][2] = BLUE;
 	break;
     case L:
 	f_blocks->rows = 2;
 	f_blocks->cols = 3;
-	f_blocks->bs[0][0] = 3;
-	f_blocks->bs[1][0] = 3;
-	f_blocks->bs[0][1] = 3;
-	f_blocks->bs[0][2] = 3;
+	f_blocks->bs[0][0] = ORANGE;
+	f_blocks->bs[1][0] = ORANGE;
+	f_blocks->bs[0][1] = ORANGE;
+	f_blocks->bs[0][2] = ORANGE;
 	break;
     case O:
 	f_blocks->rows = 2;
 	f_blocks->cols = 2;
-	f_blocks->bs[0][0] = 4;
-	f_blocks->bs[0][1] = 4;
-	f_blocks->bs[1][0] = 4;
-	f_blocks->bs[1][1] = 4;
+	f_blocks->bs[0][0] = YELLOW;
+	f_blocks->bs[0][1] = YELLOW;
+	f_blocks->bs[1][0] = YELLOW;
+	f_blocks->bs[1][1] = YELLOW;
 	break;
     case S:
 	f_blocks->rows = 2;
 	f_blocks->cols = 3;
-	f_blocks->bs[1][0] = 5;
-	f_blocks->bs[0][1] = 5;
-	f_blocks->bs[1][1] = 5;
-	f_blocks->bs[0][2] = 5;
+	f_blocks->bs[1][0] = GREEN;
+	f_blocks->bs[0][1] = GREEN;
+	f_blocks->bs[1][1] = GREEN;
+	f_blocks->bs[0][2] = GREEN;
 	break;
     case T:
 	f_blocks->rows = 2;
 	f_blocks->cols = 3;
-	f_blocks->bs[0][0] = 6;
-	f_blocks->bs[0][1] = 6;
-	f_blocks->bs[1][1] = 6;
-	f_blocks->bs[0][2] = 6;
+	f_blocks->bs[0][0] = PURPLE;
+	f_blocks->bs[0][1] = PURPLE;
+	f_blocks->bs[1][1] = PURPLE;
+	f_blocks->bs[0][2] = PURPLE;
 	break;
     case Z:
 	f_blocks->rows = 2;
 	f_blocks->cols = 3;
-	f_blocks->bs[0][0] = 7;
-	f_blocks->bs[0][1] = 7;
-	f_blocks->bs[1][1] = 7;
-	f_blocks->bs[1][2] = 7;
+	f_blocks->bs[0][0] = RED;
+	f_blocks->bs[0][1] = RED;
+	f_blocks->bs[1][1] = RED;
+	f_blocks->bs[1][2] = RED;
 	break;
     default:
 	break;
