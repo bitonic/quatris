@@ -4,6 +4,7 @@
 #include "game.h"
 #include "graphics.h"
 #include "animations.h"
+#include "ai.h"
 
 // The active blocks
 free_blocks *a_blocks = NULL;
@@ -203,13 +204,14 @@ generate_a_blocks(free_blocks *f_blocks,
 }
 
 void
-blocks_on_grid(int grid[GRID_ROWS][GRID_COLS])
+blocks_on_grid(int grid[GRID_ROWS][GRID_COLS],
+	       free_blocks *blocks)
 {
     int c, r;
-    for (r = 0; r < a_blocks->rows; r++)
-	for (c = 0; c < a_blocks->cols; c++)
-	    if (a_blocks->bs[r][c]) // If there is a block, put it on the grid
-		grid[a_blocks->pos.row + r][a_blocks->pos.col + c] = a_blocks->color;
+    for (r = 0; r < blocks->rows; r++)
+	for (c = 0; c < blocks->cols; c++)
+	    if (blocks->bs[r][c]) // If there is a block, put it on the grid
+		grid[a_blocks->pos.row + r][blocks->pos.col + c] = a_blocks->color;
 }
 
 int
@@ -433,7 +435,7 @@ game_playing(GAME_STATE *game_state,
 	if (!move_blocks(grid, a_blocks, DOWN))
 	{
 	    // Put the blocks on the grid
-	    blocks_on_grid(grid);
+	    blocks_on_grid(grid, a_blocks);
 
 	    // Assign the score for the drop
 	    *score += DROP_SCORE;

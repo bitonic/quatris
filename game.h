@@ -50,7 +50,8 @@ generate_a_blocks(free_blocks *f_blocks,
 
 // Puts the active tetromino in the grid
 void
-blocks_on_grid(int grid[GRID_ROWS][GRID_COLS]);
+blocks_on_grid(int grid[GRID_ROWS][GRID_COLS],
+	       free_blocks *blocks);
 
 int
 rotate_blocks(int grid[GRID_ROWS][GRID_COLS],

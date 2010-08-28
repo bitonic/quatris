@@ -198,6 +198,10 @@ evaluate_grid(int orig_grid[GRID_ROWS][GRID_COLS],
 	 ((double) (GRID_COLS - blocks->pos.col + blocks->cols)));
 
     int eliminated_blocks = count_eliminated_blocks(grid, blocks);
+    
+    // Put the blocks on the grid
+    blocks_on_grid(grid, blocks);
+
 
     eroded_blocks = eliminated_blocks * update_grid(grid, NULL);
 
