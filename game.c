@@ -21,6 +21,9 @@ int level = 1;
 // bools to control the user's will
 int mov_down, drop;
 
+// Bool that registers wheter to draw the shadow or not
+int draw_shadow;
+
 void
 init_game()
 {
@@ -62,6 +65,7 @@ start_game(int grid[GRID_ROWS][GRID_COLS])
 
 int
 move_blocks(int grid[GRID_ROWS][GRID_COLS],
+	    free_blocks *f_blocks,
 	    BLOCK_MOV mov)
 {
     int r, c;
@@ -74,35 +78,35 @@ move_blocks(int grid[GRID_ROWS][GRID_COLS],
     switch(mov)
     {
     case LEFT:
-	for (r = 0; r < a_blocks->rows; r++)
-	    for (c = 0; c < a_blocks->cols; c++)
-		if (a_blocks->bs[r][c] &&           // If there is a block, check
-		    ((a_blocks->pos.col + c < 1) || // That the block is in the grid
+	for (r = 0; r < f_blocks->rows; r++)
+	    for (c = 0; c < f_blocks->cols; c++)
+		if (f_blocks->bs[r][c] &&           // If there is a block, check
+		    ((f_blocks->pos.col + c < 1) || // That the block is in the grid
 		     // And that the block at the left in the grid is empty.
-		     grid[a_blocks->pos.row + r][a_blocks->pos.col + c - 1]))
+		     grid[f_blocks->pos.row + r][f_blocks->pos.col + c - 1]))
 		    return(0);
-	a_blocks->pos.col--;
+	f_blocks->pos.col--;
 	break;
     case RIGHT:
-	for (r = 0; r < a_blocks->rows; r++)
-	    for (c = 0; c < a_blocks->cols; c++)
-		if (a_blocks->bs[r][c] &&
-		    ((a_blocks->pos.col + c >= GRID_COLS - 1) ||
-		     grid[a_blocks->pos.row + r][a_blocks->pos.col + c + 1]))
+	for (r = 0; r < f_blocks->rows; r++)
+	    for (c = 0; c < f_blocks->cols; c++)
+		if (f_blocks->bs[r][c] &&
+		    ((f_blocks->pos.col + c >= GRID_COLS - 1) ||
+		     grid[f_blocks->pos.row + r][f_blocks->pos.col + c + 1]))
 		    return(0);
-	a_blocks->pos.col++;
+	f_blocks->pos.col++;
 	break;
     case UP:
 	// Don't think I'll ever use that...
 	break;
     case DOWN:
-	for (r = 0; r < a_blocks->rows; r++)
-	    for (c = 0; c < a_blocks->cols; c++)
-		if (a_blocks->bs[r][c] &&
-		    ((a_blocks->pos.row + r >= GRID_ROWS - 1) ||
-		     grid[a_blocks->pos.row + r + 1][a_blocks->pos.col + c]))
+	for (r = 0; r < f_blocks->rows; r++)
+	    for (c = 0; c < f_blocks->cols; c++)
+		if (f_blocks->bs[r][c] &&
+		    ((f_blocks->pos.row + r >= GRID_ROWS - 1) ||
+		     grid[f_blocks->pos.row + r + 1][f_blocks->pos.col + c]))
 		    return(0);
-	a_blocks->pos.row++;
+	f_blocks->pos.row++;
 	break;
     default:
 	break;
@@ -113,7 +117,7 @@ move_blocks(int grid[GRID_ROWS][GRID_COLS],
 void
 drop_blocks(int grid[GRID_ROWS][GRID_COLS])
 {
-    while (move_blocks(grid, DOWN))
+    while (move_blocks(grid, a_blocks, DOWN))
 	;
 }
 
@@ -133,58 +137,65 @@ generate_a_blocks(free_blocks *f_blocks,
     case I:
 	f_blocks->rows = 1;
 	f_blocks->cols = 4;
-	f_blocks->bs[0][0] = CYAN;
-	f_blocks->bs[0][1] = CYAN;
-	f_blocks->bs[0][2] = CYAN;
-	f_blocks->bs[0][3] = CYAN;
+	f_blocks->color = CYAN;
+	f_blocks->bs[0][0] = 1;
+	f_blocks->bs[0][1] = 1;
+	f_blocks->bs[0][2] = 1;
+	f_blocks->bs[0][3] = 1;
 	break;
     case J:
 	f_blocks->rows = 2;
 	f_blocks->cols = 3;
-	f_blocks->bs[0][0] = BLUE;
-	f_blocks->bs[0][1] = BLUE;
-	f_blocks->bs[0][2] = BLUE;
-	f_blocks->bs[1][2] = BLUE;
+	f_blocks->color = BLUE;
+	f_blocks->bs[0][0] = 1;
+	f_blocks->bs[0][1] = 1;
+	f_blocks->bs[0][2] = 1;
+	f_blocks->bs[1][2] = 1;
 	break;
     case L:
 	f_blocks->rows = 2;
 	f_blocks->cols = 3;
-	f_blocks->bs[0][0] = ORANGE;
-	f_blocks->bs[1][0] = ORANGE;
-	f_blocks->bs[0][1] = ORANGE;
-	f_blocks->bs[0][2] = ORANGE;
+	f_blocks->color = ORANGE;
+	f_blocks->bs[0][0] = 1;
+	f_blocks->bs[1][0] = 1;
+	f_blocks->bs[0][1] = 1;
+	f_blocks->bs[0][2] = 1;
 	break;
     case O:
 	f_blocks->rows = 2;
 	f_blocks->cols = 2;
-	f_blocks->bs[0][0] = YELLOW;
-	f_blocks->bs[0][1] = YELLOW;
-	f_blocks->bs[1][0] = YELLOW;
-	f_blocks->bs[1][1] = YELLOW;
+	f_blocks->color = YELLOW;
+	f_blocks->bs[0][0] = 1;
+	f_blocks->bs[0][1] = 1;
+	f_blocks->bs[1][0] = 1;
+	f_blocks->bs[1][1] = 1;
 	break;
     case S:
 	f_blocks->rows = 2;
 	f_blocks->cols = 3;
-	f_blocks->bs[1][0] = GREEN;
-	f_blocks->bs[0][1] = GREEN;
-	f_blocks->bs[1][1] = GREEN;
-	f_blocks->bs[0][2] = GREEN;
+	f_blocks->color = GREEN;
+	f_blocks->bs[1][0] = 1;
+	f_blocks->bs[0][1] = 1;
+	f_blocks->bs[1][1] = 1;
+	f_blocks->bs[0][2] = 1;
 	break;
     case T:
 	f_blocks->rows = 2;
 	f_blocks->cols = 3;
-	f_blocks->bs[0][0] = PURPLE;
-	f_blocks->bs[0][1] = PURPLE;
-	f_blocks->bs[1][1] = PURPLE;
-	f_blocks->bs[0][2] = PURPLE;
+	f_blocks->color = PURPLE;
+	f_blocks->bs[0][0] = 1;
+	f_blocks->bs[0][1] = 1;
+	f_blocks->bs[1][1] = 1;
+	f_blocks->bs[0][2] = 1;
 	break;
     case Z:
 	f_blocks->rows = 2;
 	f_blocks->cols = 3;
-	f_blocks->bs[0][0] = RED;
-	f_blocks->bs[0][1] = RED;
-	f_blocks->bs[1][1] = RED;
-	f_blocks->bs[1][2] = RED;
+	f_blocks->color = RED;
+	f_blocks->bs[0][0] = 1;
+	f_blocks->bs[0][1] = 1;
+	f_blocks->bs[1][1] = 1;
+	f_blocks->bs[1][2] = 1;
 	break;
     default:
 	break;
@@ -198,7 +209,7 @@ blocks_on_grid(int grid[GRID_ROWS][GRID_COLS])
     for (r = 0; r < a_blocks->rows; r++)
 	for (c = 0; c < a_blocks->cols; c++)
 	    if (a_blocks->bs[r][c]) // If there is a block, put it on the grid
-		grid[a_blocks->pos.row + r][a_blocks->pos.col + c] = a_blocks->bs[r][c];
+		grid[a_blocks->pos.row + r][a_blocks->pos.col + c] = a_blocks->color;
 }
 
 int
@@ -209,6 +220,7 @@ rotate_blocks(int grid[GRID_ROWS][GRID_COLS],
     
     new_blocks->cols = a_blocks->rows;
     new_blocks->rows = a_blocks->cols;
+    new_blocks->color = a_blocks->color;
     new_blocks->pos.row = a_blocks->pos.row;
     new_blocks->pos.col = a_blocks->pos.col + ((a_blocks->cols - a_blocks->rows) / 2);
 
@@ -358,10 +370,10 @@ game_playing(GAME_STATE *game_state,
 	    switch (event.key.keysym.sym)
 	    {
 	    case SDLK_LEFT:
-		move_blocks(grid, LEFT);
+		move_blocks(grid, a_blocks, LEFT);
 		break;
 	    case SDLK_RIGHT:
-		move_blocks(grid, RIGHT);
+		move_blocks(grid, a_blocks, RIGHT);
 		break;
 	    case SDLK_DOWN:
 		/*
@@ -391,7 +403,11 @@ game_playing(GAME_STATE *game_state,
 		drop_blocks(grid);
 		drop = 1;
 		// This is to avoid flickerings and other nasty things
-		draw_game_playing(grid, a_blocks, next_a_blocks, *score, level);
+		draw_game_playing(grid, a_blocks, next_a_blocks, *score, level, draw_shadow);
+		break;
+	    case SDLK_h:
+		// Toggle the shadow
+		draw_shadow = draw_shadow ? 0 : 1;
 		break;
 	    default:
 		break;
@@ -429,7 +445,7 @@ game_playing(GAME_STATE *game_state,
 	  If we can move down, good, if we can't, generate new
 	  active blocks.
 	*/
-	if (!move_blocks(grid, DOWN))
+	if (!move_blocks(grid, a_blocks, DOWN))
 	{
 	    // Put the blocks on the grid
 	    blocks_on_grid(grid);
@@ -466,7 +482,7 @@ game_playing(GAME_STATE *game_state,
 	drop = 0; // set drop to 0 again
     }
 
-    if (!draw_game_playing(grid, a_blocks, next_a_blocks, *score, level))
+    if (!draw_game_playing(grid, a_blocks, next_a_blocks, *score, level, draw_shadow))
 	return(0);
 
     return(1);
@@ -529,6 +545,7 @@ copy_free_blocks(free_blocks *dest,
     dest->pos = src->pos;
     dest->rows = src->rows;
     dest->cols = src->cols;
+    dest->color = src->color;
     int r;
     for (r = 0; r < src->rows; r++)
 	memcpy(dest->bs[r], src->bs[r], sizeof(int) * src->cols);

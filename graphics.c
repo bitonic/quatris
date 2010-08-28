@@ -5,8 +5,8 @@
 SDL_Color bgr_color = {0, 0, 0};
 
 SDL_Surface *blocks_sprite = NULL; // It will hold the img with the blocks
-SDL_Rect *block_colors[8]; // It will hold the various rects
-                           // for the various colors
+SDL_Rect *block_colors[COLORS_QTY]; // It will hold the various rects
+// for the various colors
 
 // Images
 SDL_Surface *splashscreen = NULL;
@@ -69,7 +69,7 @@ init_graphics()
 
     // Loads the various rects into the blocks_types array
     int i;
-    for (i = 0; i < 8; i++)
+    for (i = 0; i < COLORS_QTY; i++)
     {
 	block_colors[i] = (SDL_Rect *) malloc(sizeof(SDL_Rect));
 	block_colors[i]->x = i * BLOCK_SIZE;
@@ -172,7 +172,7 @@ draw_free_blocks(free_blocks *a_blocks,
     for (r = 0; r < a_blocks->rows; r++)
 	for (c = 0; c < a_blocks->cols; c++)
 	    if (a_blocks->bs[r][c])
-		draw_block(block_colors[a_blocks->bs[r][c] - 1], dest,
+		draw_block(block_colors[a_blocks->color - 1], dest,
 			   x + (a_blocks->pos.col + c) * BLOCK_SIZE,
 			   y + (a_blocks->pos.row + r) * BLOCK_SIZE);
 }
@@ -190,7 +190,8 @@ draw_game_playing(int grid[GRID_ROWS][GRID_COLS],
 		  free_blocks *a_blocks,
 		  free_blocks *next_a_blocks,
 		  int score,
-		  int level)
+		  int level,
+		  int draw_shadow)
 {
     // Clears the screen
     SDL_FillRect(SDL_GetVideoSurface(), NULL,
@@ -205,6 +206,10 @@ draw_game_playing(int grid[GRID_ROWS][GRID_COLS],
     
     if (a_blocks)
     {
+	if (draw_shadow)
+	    // Display the shadow
+	    draw_shadow_blocks(grid, a_blocks);
+
 	// Display active blocks
 	draw_free_blocks(a_blocks, SDL_GetVideoSurface(), GRID_POS_X, GRID_POS_Y);
     }
@@ -236,6 +241,22 @@ draw_game_playing(int grid[GRID_ROWS][GRID_COLS],
 	return(0);
 
     return(1);
+}
+
+void
+draw_shadow_blocks(int grid[GRID_ROWS][GRID_COLS],
+		   free_blocks *a_blocks)
+{
+    free_blocks *shadow_blocks = (free_blocks *) malloc(sizeof(free_blocks));
+    copy_free_blocks(shadow_blocks, a_blocks);
+    shadow_blocks->color += 7;
+
+    while (move_blocks(grid, shadow_blocks, DOWN))
+	;
+
+    draw_free_blocks(shadow_blocks, SDL_GetVideoSurface(), GRID_POS_X, GRID_POS_Y);
+
+    free(shadow_blocks);
 }
 
 int 

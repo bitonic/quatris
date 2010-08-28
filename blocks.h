@@ -8,6 +8,7 @@ typedef struct {
 
 typedef struct {
     block_pos pos;
+    int color;
     int rows;
     int cols;
     int bs[4][4];

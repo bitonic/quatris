@@ -22,12 +22,17 @@
 
 
 /*
- * These must be in the same order as in the 
- * blocks.png image
+  These must be in the same order as in the 
+  blocks.png image.
+  The transparent blocks (TR) must be after the non-transparent ones
  */
+#define COLORS_QTY 15
 typedef enum {
     CYAN = 1, BLUE, ORANGE, YELLOW,
-    GREEN, PURPLE, RED, GREY
+    GREEN, PURPLE, RED,
+    TRCYAN, TRBLUE, TRORANGE, TRYELLOW,
+    TRGREEN, TRPURPLE, TRRED,
+    GREY
 } BLOCK_COLORS;
 
 
@@ -61,6 +66,10 @@ void
 draw_free_blocks(free_blocks *a_blocks,
 		 SDL_Surface *dest,
 		 int x, int y);
+void
+draw_shadow_blocks(int grid[GRID_ROWS][GRID_COLS],
+		   free_blocks *a_blocks);
+
 
 void
 empty_grid(int grid[GRID_ROWS][GRID_COLS]);
@@ -70,7 +79,8 @@ draw_game_playing(int grid[GRID_ROWS][GRID_COLS],
 		  free_blocks *a_blocks,
 		  free_blocks *next_a_blocks,
 		  int score,
-		  int level);
+		  int level,
+		  int draw_shadow);
 
 int
 draw_splashscreen(int anykey);

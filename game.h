@@ -40,6 +40,7 @@ start_game(int grid[GRID_ROWS][GRID_COLS]);
 // Move the blocks
 int
 move_blocks(int grid[][GRID_COLS],
+	    free_blocks *f_blocks,
 	    BLOCK_MOV mov);
 
 // Generate a new tetromino
