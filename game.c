@@ -314,7 +314,7 @@ update_grid(int grid[GRID_ROWS][GRID_COLS],
     }
     
     // If 1 or more row were cleared
-    if (grid_changed)
+    if (grid_changed && fpsmanager)
     {
 	// Animation
 	blink_grid(new_grid, grid, fpsmanager);
@@ -333,22 +333,7 @@ update_grid(int grid[GRID_ROWS][GRID_COLS],
 	}
     }
 
-    // Calculate score
-    switch(counter)
-    {
-    case 0:
-	return(0);
-    case 1:
-	return(SCORE_SINGLE);
-    case 2:
-	return(SCORE_DOUBLE);
-    case 3:
-	return(SCORE_TRIPLE);
-    case 4:
-	return(SCORE_TETRIS);
-    default:
-	return(0);
-    }
+    return(counter);
 }
 
 int
@@ -454,10 +439,27 @@ game_playing(GAME_STATE *game_state,
 	    *score += DROP_SCORE;
 
 	    // Check if there are some complete rows, and update the score
-	    *score += update_grid(grid, fpsmanager);
+	    // Calculate score
+	    switch(update_grid(grid, fpsmanager))
+	    {
+	    case 1:
+		*score += SCORE_SINGLE;
+		break;
+	    case 2:
+		*score += SCORE_DOUBLE;
+		break;
+	    case 3:
+		*score += SCORE_TRIPLE;
+		break;
+	    case 4:
+		*score += SCORE_TETRIS;
+		break;
+	    default:
+		break;
+	    }
 
 	    // Copy the blocks planned to the active blocks
-	    copy_free_blocks(a_blocks, next_a_blocks);
+	    memcpy(a_blocks, next_a_blocks, sizeof(free_blocks));
 
 	    // Set the right column
 	    a_blocks->pos.col = GRID_COLS / 2 - a_blocks->cols / 2;
@@ -535,18 +537,4 @@ game_lost(int grid[GRID_ROWS][GRID_COLS],
     }
 
     return(1);
-}
-
-
-void
-copy_free_blocks(free_blocks *dest,
-		 free_blocks *src)
-{
-    dest->pos = src->pos;
-    dest->rows = src->rows;
-    dest->cols = src->cols;
-    dest->color = src->color;
-    int r;
-    for (r = 0; r < src->rows; r++)
-	memcpy(dest->bs[r], src->bs[r], sizeof(int) * src->cols);
 }

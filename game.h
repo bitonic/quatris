@@ -63,6 +63,7 @@ has_lost(int grid[GRID_ROWS][GRID_COLS]);
 /*
   If there are complete rows, then it animates
   the grid and removes the rows from it.
+  Returns the number of completed rows
 */
 int
 update_grid(int grid[GRID_ROWS][GRID_COLS],

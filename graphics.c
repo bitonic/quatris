@@ -256,7 +256,7 @@ draw_shadow_blocks(int grid[GRID_ROWS][GRID_COLS],
 		   free_blocks *a_blocks)
 {
     free_blocks *shadow_blocks = (free_blocks *) malloc(sizeof(free_blocks));
-    copy_free_blocks(shadow_blocks, a_blocks);
+    memcpy(shadow_blocks, a_blocks, sizeof(free_blocks));
     shadow_blocks->color += 7;
 
     while (move_blocks(grid, shadow_blocks, DOWN))
