@@ -80,6 +80,7 @@ draw_game_playing(int grid[GRID_ROWS][GRID_COLS],
 		  free_blocks *next_a_blocks,
 		  int score,
 		  int level,
+		  int lines,
 		  int draw_shadow);
 
 int

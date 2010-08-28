@@ -403,7 +403,7 @@ game_playing(GAME_STATE *game_state,
 		drop_blocks(grid);
 		drop = 1;
 		// This is to avoid flickerings and other nasty things
-		draw_game_playing(grid, a_blocks, next_a_blocks, *score, level, draw_shadow);
+		draw_game_playing(grid, a_blocks, next_a_blocks, *score, level, lines, draw_shadow);
 		break;
 	    case SDLK_h:
 		// Toggle the shadow
@@ -482,7 +482,7 @@ game_playing(GAME_STATE *game_state,
 	drop = 0; // set drop to 0 again
     }
 
-    if (!draw_game_playing(grid, a_blocks, next_a_blocks, *score, level, draw_shadow))
+    if (!draw_game_playing(grid, a_blocks, next_a_blocks, *score, level, lines, draw_shadow))
 	return(0);
 
     return(1);

@@ -191,6 +191,7 @@ draw_game_playing(int grid[GRID_ROWS][GRID_COLS],
 		  free_blocks *next_a_blocks,
 		  int score,
 		  int level,
+		  int lines,
 		  int draw_shadow)
 {
     // Clears the screen
@@ -227,14 +228,21 @@ draw_game_playing(int grid[GRID_ROWS][GRID_COLS],
     sprintf(sscore, "%d", score);
     apply_surface(TTF_RenderText_Shaded(inconsolata28, sscore, font_color_white, bgr_color),
 		  NULL, SDL_GetVideoSurface(), x,
-		  GRID_POS_Y + 115);
+		  GRID_POS_Y + 108);
 
     // Display the level
     char slevel[3];
     sprintf(slevel, "%d", level);
     apply_surface(TTF_RenderText_Shaded(inconsolata28, slevel, font_color_white, bgr_color),
 		  NULL, SDL_GetVideoSurface(), x,
-		  GRID_POS_Y + 215);    
+		  GRID_POS_Y + 185);
+
+    // Display the lines
+    char slines[15];
+    sprintf(slines, "%d", lines);
+    apply_surface(TTF_RenderText_Shaded(inconsolata28, slines, font_color_white, bgr_color),
+		  NULL, SDL_GetVideoSurface(), x,
+		  GRID_POS_Y + 265);
 
     // Display the screen
     if (SDL_Flip(SDL_GetVideoSurface()) == -1)
