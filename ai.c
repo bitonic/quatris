@@ -3,8 +3,8 @@
   who got his code from Pierre Dellacherie (Email: ellache@club-internet.frd)
  */
 
+#include <string.h>
 #include <stdlib.h>
-#include <stdio.h>
 #include "ai.h"
 
 // Helper functions
@@ -238,7 +238,7 @@ evaluate_grid(int orig_grid[GRID_ROWS][GRID_COLS],
     free(blocks);
 }
 
-move
+ai_move
 get_best_move(int grid[GRID_ROWS][GRID_COLS],
 	      free_blocks *a_blocks)
 {
@@ -246,11 +246,10 @@ get_best_move(int grid[GRID_ROWS][GRID_COLS],
     free_blocks *blocks2 = (free_blocks *) malloc(sizeof(free_blocks));
     free_blocks *blocks3 = (free_blocks *) malloc(sizeof(free_blocks));
 
-    move best_move;
-    memset(&best_move, 0, sizeof(move));
-    best_move.direction = RIGHT; // Just to have a default move
-    move tmp_move;
-    memset(&tmp_move, 0, sizeof(move));
+    ai_move best_move;
+    memset(&best_move, 0, sizeof(ai_move));
+    ai_move tmp_move;
+    memset(&tmp_move, 0, sizeof(ai_move));
     double best_score = -1.0e+20;
     double tmp_score;
     int best_priority = 0;
@@ -271,9 +270,8 @@ get_best_move(int grid[GRID_ROWS][GRID_COLS],
 	
 	// Move left
 	memcpy(blocks2, blocks1, sizeof(free_blocks));
-	tmp_move.direction = LEFT;
-	tmp_move.steps = 0;
 	do {
+	    tmp_move.column = blocks2->pos.col;
 	    // Make another copy
 	    memcpy(blocks3, blocks2, sizeof(free_blocks));
 	    // Drop the block
@@ -286,19 +284,15 @@ get_best_move(int grid[GRID_ROWS][GRID_COLS],
 	    {
 		best_score = tmp_score;
 		best_priority = tmp_priority;
-		memcpy(&best_move, &tmp_move, sizeof(move));
+		memcpy(&best_move, &tmp_move, sizeof(ai_move));
 	    }
-	    
-	    tmp_move.steps++;
 	} while (move_blocks(grid, blocks2, LEFT));
 
 	// Move right
 	memcpy(blocks2, blocks1, sizeof(free_blocks));
-	tmp_move.direction = RIGHT;
-	tmp_move.steps = 0;
 	while (move_blocks(grid, blocks2, RIGHT))
 	{
-	    tmp_move.steps++;
+	    tmp_move.column = blocks2->pos.col;
 	    // Make another copy
 	    memcpy(blocks3, blocks2, sizeof(free_blocks));
 	    // Drop the block
@@ -311,7 +305,7 @@ get_best_move(int grid[GRID_ROWS][GRID_COLS],
 	    {
 		best_score = tmp_score;
 		best_priority = tmp_priority;
-		memcpy(&best_move, &tmp_move, sizeof(move));
+		memcpy(&best_move, &tmp_move, sizeof(ai_move));
 	    }
 	}
     }
@@ -321,4 +315,36 @@ get_best_move(int grid[GRID_ROWS][GRID_COLS],
     free(blocks3);
 
     return(best_move);
+}
+
+void
+execute_ai_move(int grid[GRID_ROWS][GRID_COLS],
+		free_blocks *blocks,
+		ai_move *move)
+{
+    // Convert clockwise rotations to counter clockwise if necessary
+    if (move->rotations > 2)
+	move->rotations -= 4;
+
+    // Rotate
+    if (move->rotations > 0)
+    {
+	rotate_blocks(grid, blocks, 1);
+	move->rotations--;
+    }
+    else if (move->rotations < 0)
+    {
+	rotate_blocks(grid, blocks, 0);
+	move->rotations++;
+    }
+    
+    // Move
+    if (move->column < blocks->pos.col)
+	move_blocks(grid, blocks, LEFT);
+    else if (move->column > blocks->pos.col)
+	move_blocks(grid, blocks, RIGHT);
+
+    // If we are done, drop
+    if (move->rotations == 0 && move->column == blocks->pos.col)
+	drop_blocks(grid, blocks);
 }

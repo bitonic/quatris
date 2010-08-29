@@ -22,8 +22,12 @@ int level = 1;
 // bools to control the user's will
 int mov_down, drop;
 
+// MODES
 // Bool that registers wheter to draw the shadow or not
-int draw_shadow;
+int draw_shadow = 0;
+// ai mode
+int ai_mode = 0;
+ai_move best_move;
 
 void
 init_game()
@@ -56,6 +60,9 @@ start_game(int grid[GRID_ROWS][GRID_COLS])
 
     // Set the right column
     a_blocks->pos.col = GRID_COLS / 2 - a_blocks->cols / 2;
+
+    // Generate best move
+    best_move = get_best_move(grid, a_blocks);
 
     mov_down = 0;
     drop = 0;
@@ -318,7 +325,7 @@ update_grid(int grid[GRID_ROWS][GRID_COLS],
 	{
 	    grid_changed = 1;
 	    cleared_rows[counter] = r; // Remember it
-	    counter++; lines++;
+	    counter++;
 	    // Set it to 0 in the grid copy for the animation
 	    memset(new_grid[r], 0, sizeof(new_grid[r]));
 	}
@@ -365,55 +372,68 @@ game_playing(GAME_STATE *game_state,
 	case SDL_KEYDOWN:
 	    switch (event.key.keysym.sym)
 	    {
-	    case SDLK_LEFT:
-		move_blocks(grid, a_blocks, LEFT);
-		break;
-	    case SDLK_RIGHT:
-		move_blocks(grid, a_blocks, RIGHT);
-		break;
-	    case SDLK_DOWN:
-		/*
-		  The DOWN movement is different, since we want to keep
-		  going if the user keeps the down key pressed. So we
-		  set mov_down and we unset it when the user releases the
-		  key.
-		*/
-		mov_down = 1;
-		break;
-	    case SDLK_a:
-	    case SDLK_UP:
-		rotate_blocks(grid, a_blocks, 1);
-		break;
-	    case SDLK_d:
-		rotate_blocks(grid, a_blocks, 1);
-		break;
 	    case SDLK_p:
 		*game_state = PAUSED;
 		draw_game_paused();
 		return(1);
 	    case SDLK_r:
 		*game_state = SPLASHSCREEN;
-		return(1);
-	    case SDLK_SPACE:
-		// Drop the piece
-		drop_blocks(grid, a_blocks);
-		drop = 1;
-		// This is to avoid flickerings and other nasty things
-		draw_game_playing(grid, a_blocks, next_a_blocks, *score, level, lines, draw_shadow);
-		break;
 	    case SDLK_h:
 		// Toggle the shadow
 		draw_shadow = draw_shadow ? 0 : 1;
 		break;
+	    case SDLK_i:
+		// toggle the AI
+		ai_mode = ai_mode ? 0 : 1;
+		break;
 	    default:
 		break;
 	    }
+	    
+	    // If we aren't in AI mode, enable the user's control
+	    if (!ai_mode)
+		switch (event.key.keysym.sym)
+		{
+		case SDLK_LEFT:
+		    move_blocks(grid, a_blocks, LEFT);
+		    break;
+		case SDLK_RIGHT:
+		    move_blocks(grid, a_blocks, RIGHT);
+		    break;
+		case SDLK_DOWN:
+		    /*
+		      The DOWN movement is different, since we want to keep
+		      going if the user keeps the down key pressed. So we
+		      set mov_down and we unset it when the user releases the
+		      key.
+		    */
+		    mov_down = 1;
+		    break;
+		case SDLK_a:
+		case SDLK_UP:
+		    rotate_blocks(grid, a_blocks, 1);
+		    break;
+		case SDLK_d:
+		    rotate_blocks(grid, a_blocks, 1);
+		    break;
+		case SDLK_SPACE:
+		    // Drop the piece
+		    drop_blocks(grid, a_blocks);
+		    drop = 1;
+		    // This is to avoid flickerings and other nasty things
+		    draw_game_playing(grid, a_blocks, next_a_blocks, *score, level, lines, draw_shadow);
+		    break;
+		default:
+		    break;
+		}
+
 	    break;
 	case SDL_KEYUP:
 	    switch (event.key.keysym.sym)
 	    {
 	    case SDLK_DOWN:
-		mov_down = 0;
+		if (!ai_mode)
+		    mov_down = 0;
 		break;
 	    default:
 		break;
@@ -428,6 +448,10 @@ game_playing(GAME_STATE *game_state,
 	level++;
 	fall_interval = FALL_INTERVAL - (FALL_INTERVAL / MAX_LEVEL * level);
     }
+
+    // If the ai_mode is on, animate
+    if (ai_mode)
+	execute_ai_move(grid, a_blocks, &best_move);
 
     /*
       If the user is pressing the down key, if
@@ -451,7 +475,9 @@ game_playing(GAME_STATE *game_state,
 
 	    // Check if there are some complete rows, and update the score
 	    // Calculate score
-	    switch(update_grid(grid, fpsmanager))
+	    int cleared_lines = update_grid(grid, fpsmanager);
+	    lines += cleared_lines;
+	    switch(cleared_lines)
 	    {
 	    case 1:
 		*score += SCORE_SINGLE;
@@ -475,13 +501,6 @@ game_playing(GAME_STATE *game_state,
 	    // Set the right column
 	    a_blocks->pos.col = GRID_COLS / 2 - a_blocks->cols / 2;
 
-	    // best move
-	    move best_move = get_best_move(grid, a_blocks);
-	    printf("Best move: %d steps %s, %d rotations.\n",
-		   best_move.steps,
-		   best_move.direction ? "right" : "left",
-		   best_move.rotations);
-
 	    // Check if the user has lost
 	    if (has_lost(grid))
 	    {
@@ -493,6 +512,10 @@ game_playing(GAME_STATE *game_state,
 
 	    // Generate new blocks
 	    generate_a_blocks(next_a_blocks, rand() % 7);
+
+	    // best move
+	    best_move = get_best_move(grid, a_blocks);
+	    printf("best move: column %d, %d rotations\n", best_move.column, best_move.rotations);
 	}
 	if (enough_time)
 	{
