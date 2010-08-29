@@ -40,13 +40,22 @@ start_game(int grid[GRID_ROWS][GRID_COLS]);
 // Move the blocks
 int
 move_blocks(int grid[][GRID_COLS],
-	    free_blocks *f_blocks,
+	    free_blocks *blocks,
 	    BLOCK_MOV mov);
+
+// Drop the current blocks
+void
+drop_blocks(int grid[GRID_ROWS][GRID_COLS],
+	    free_blocks *blocks);
 
 // Generate a new tetromino
 void
-generate_a_blocks(free_blocks *f_blocks,
+generate_a_blocks(free_blocks *blocks,
 		  int new_block);
+
+// Returns the number of possible orientation of a tetromino
+int
+tetro_rotations(int block);
 
 // Puts the active tetromino in the grid
 void
@@ -55,6 +64,7 @@ blocks_on_grid(int grid[GRID_ROWS][GRID_COLS],
 
 int
 rotate_blocks(int grid[GRID_ROWS][GRID_COLS],
+	      free_blocks *blocks,
 	      int clockwise);
 
 // Checks if the player has lost

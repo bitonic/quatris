@@ -4,6 +4,7 @@
  */
 
 #include <stdlib.h>
+#include <stdio.h>
 #include "ai.h"
 
 // Helper functions
@@ -62,11 +63,10 @@ get_row_transitions(int grid[GRID_ROWS][GRID_COLS],
 {
     int c, transitions = 0;
 
-    // Check cell and neighbor to right...
-    for (c = 0; c < GRID_COLS - 1; c++ )
+    for (c = 0; c < GRID_COLS; c++)
 	// If a transition from occupied to unoccupied, or
-	// from unoccupied to occupied, then it's a transition.
-	if ((grid[r][c] && grid[r][c + 1]) ||
+	// from unoccupied to occupied, it's a transition.
+	if ((grid[r][c] && !grid[r][c + 1]) ||
 	    (!grid[r][c] && grid[r][c + 1]))
 	    transitions++;
 
@@ -90,21 +90,22 @@ get_col_transitions(int grid[GRID_ROWS][GRID_COLS],
     int transitions = 0, r;
 
     // Check cell and neighbor above...
-    for (r = 0; r < GRID_ROWS - 1; r++)
+    for (r = GRID_ROWS - 1; r >= 0; r--)
 	// If a transition from occupied to unoccupied, or
 	// from unoccupied to occupied, it's a transition.
-	if ((grid[r][c] && !grid[r + 1][c]) ||
-	    (!grid[r][c] && grid[r + 1][c]))
+	if ((grid[r][c] && !grid[r - 1][c]) ||
+	    (!grid[r][c] && grid[r - 1][c]))
 	    transitions++;
 
     // Check transition between bottom-exterior and row Y=1.
     // (NOTE: Bottom exterior is implicitly "occupied".)
 
-    if (grid[0][c])
+    if (!grid[GRID_ROWS - 1][c])
 	transitions++;
+
     // Check transition between column 'mHeight' and above-exterior.
     // (NOTE: Sky above is implicitly UN-"occupied".)
-    if (grid[GRID_ROWS - 1][c]) 
+    if (grid[0][c]) 
 	transitions++;
 
     return(transitions);
@@ -134,7 +135,7 @@ blanks_down(int grid[GRID_ROWS][GRID_COLS],
     int r;
 
     for (r = top_r; r < GRID_ROWS; r++)
-	if (!grid[r][c])
+	if (grid[r][c])
 	    return(blanks);
 	else
 	    blanks++;
@@ -145,12 +146,12 @@ int
 get_wells(int grid[GRID_ROWS][GRID_COLS],
 	  int c)
 {
-    int r, well_value = 0, cell_left, cell_right, blanks;
+    int r, well_value = 0, cell_left, cell_right;
 
     
     for (r = 0; r < GRID_ROWS; r++)
     {
-	if (r < GRID_ROWS - 1)
+	if (c > 0)
 	    cell_left = grid[r][c - 1];
 	else
 	    cell_left = 1;
@@ -161,10 +162,7 @@ get_wells(int grid[GRID_ROWS][GRID_COLS],
 	    cell_right = 1;
 
 	if (cell_left && cell_right)
-	{
-	    blanks = blanks_down(grid, r, c);
-	    well_value += blanks;
-	}
+	    well_value += blanks_down(grid, r, c);
     }
 
     return(well_value);
@@ -172,9 +170,11 @@ get_wells(int grid[GRID_ROWS][GRID_COLS],
 
 //-------------
 
-double
+void
 evaluate_grid(int orig_grid[GRID_ROWS][GRID_COLS],
-	      free_blocks *orig_blocks)
+	      free_blocks *orig_blocks,
+	      int *priority,
+	      double *score)
 {
     int grid[GRID_ROWS][GRID_COLS];
     memcpy(grid, orig_grid, sizeof(grid));
@@ -194,15 +194,21 @@ evaluate_grid(int orig_grid[GRID_ROWS][GRID_COLS],
     int r, c;
 
     double landing_height = 0.5 *
-	(((double) (GRID_COLS  - blocks->pos.col)) +
-	 ((double) (GRID_COLS - blocks->pos.col + blocks->cols)));
+	(((double) (GRID_ROWS - blocks->pos.row - blocks->rows)) +
+	 ((double) (GRID_ROWS - blocks->pos.row)));
 
     int eliminated_blocks = count_eliminated_blocks(grid, blocks);
     
+    // Calculate priority
+    *priority = 0;
+    *priority += 100 * abs(blocks->pos.col - (GRID_COLS / 2 - blocks->cols / 2));
+    if (blocks->pos.col < GRID_COLS / 2 - blocks->cols / 2)
+	priority += 10;
+
     // Put the blocks on the grid
     blocks_on_grid(grid, blocks);
-
-
+    
+    // Calcolate eroded blocks, updating the grid
     eroded_blocks = eliminated_blocks * update_grid(grid, NULL);
 
     pile_height = pile_max_height(grid);
@@ -214,9 +220,9 @@ evaluate_grid(int orig_grid[GRID_ROWS][GRID_COLS],
 
     for (c = 0; c < GRID_COLS; c++)
     {
-	col_transitions = get_col_transitions(grid, c);
-	buried_holes = get_buried_holes(grid, c);
-	
+	col_transitions += get_col_transitions(grid, c);
+	buried_holes += get_buried_holes(grid, c);
+	wells += get_wells(grid, c);
     }
 
     rating  =  ( 0.0);
@@ -227,5 +233,92 @@ evaluate_grid(int orig_grid[GRID_ROWS][GRID_COLS],
     rating += -4.0 * ((double) buried_holes);
     rating += -1.0 * ((double) wells);
 
-    return(rating);
+    *score = rating;
+
+    free(blocks);
+}
+
+move
+get_best_move(int grid[GRID_ROWS][GRID_COLS],
+	      free_blocks *a_blocks)
+{
+    free_blocks *blocks1 = (free_blocks *) malloc(sizeof(free_blocks));
+    free_blocks *blocks2 = (free_blocks *) malloc(sizeof(free_blocks));
+    free_blocks *blocks3 = (free_blocks *) malloc(sizeof(free_blocks));
+
+    move best_move;
+    memset(&best_move, 0, sizeof(move));
+    best_move.direction = RIGHT; // Just to have a default move
+    move tmp_move;
+    memset(&tmp_move, 0, sizeof(move));
+    double best_score = -1.0e+20;
+    double tmp_score;
+    int best_priority = 0;
+    int tmp_priority;
+    
+    int rotations;
+    for (rotations = 0;
+	 rotations < tetro_rotations(a_blocks->type);
+	 rotations++)
+    {
+	tmp_move.rotations = rotations;
+	// Make a fresh copy
+	memcpy(blocks1, a_blocks, sizeof(free_blocks));
+	// Rotate the block if we can. If not, break
+	if (rotations)
+	    if (!rotate_blocks(grid, blocks1, 1))
+		break;
+	
+	// Move left
+	memcpy(blocks2, blocks1, sizeof(free_blocks));
+	tmp_move.direction = LEFT;
+	tmp_move.steps = 0;
+	do {
+	    // Make another copy
+	    memcpy(blocks3, blocks2, sizeof(free_blocks));
+	    // Drop the block
+	    drop_blocks(grid, blocks3);
+	    // Evaluate
+	    evaluate_grid(grid, blocks3, &tmp_priority, &tmp_score);
+	    // If it's better...
+	    if (tmp_score > best_score ||
+		(tmp_score == best_score && tmp_priority > best_priority))
+	    {
+		best_score = tmp_score;
+		best_priority = tmp_priority;
+		memcpy(&best_move, &tmp_move, sizeof(move));
+	    }
+	    
+	    tmp_move.steps++;
+	} while (move_blocks(grid, blocks2, LEFT));
+
+	// Move right
+	memcpy(blocks2, blocks1, sizeof(free_blocks));
+	tmp_move.direction = RIGHT;
+	tmp_move.steps = 0;
+	while (move_blocks(grid, blocks2, RIGHT))
+	{
+	    tmp_move.steps++;
+	    // Make another copy
+	    memcpy(blocks3, blocks2, sizeof(free_blocks));
+	    // Drop the block
+	    drop_blocks(grid, blocks3);
+	    // Evaluate
+	    evaluate_grid(grid, blocks3, &tmp_priority, &tmp_score);
+	    // If it's better...
+	    if (tmp_score > best_score ||
+		(tmp_score == best_score && tmp_priority > best_priority))
+	    {
+		best_score = tmp_score;
+		best_priority = tmp_priority;
+		memcpy(&best_move, &tmp_move, sizeof(move));
+	    }
+	}
+    }
+
+    free(blocks1);
+    free(blocks2);
+    free(blocks3);
+
+    return(best_move);
 }

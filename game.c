@@ -66,7 +66,7 @@ start_game(int grid[GRID_ROWS][GRID_COLS])
 
 int
 move_blocks(int grid[GRID_ROWS][GRID_COLS],
-	    free_blocks *f_blocks,
+	    free_blocks *blocks,
 	    BLOCK_MOV mov)
 {
     int r, c;
@@ -79,35 +79,35 @@ move_blocks(int grid[GRID_ROWS][GRID_COLS],
     switch(mov)
     {
     case LEFT:
-	for (r = 0; r < f_blocks->rows; r++)
-	    for (c = 0; c < f_blocks->cols; c++)
-		if (f_blocks->bs[r][c] &&           // If there is a block, check
-		    ((f_blocks->pos.col + c < 1) || // That the block is in the grid
+	for (r = 0; r < blocks->rows; r++)
+	    for (c = 0; c < blocks->cols; c++)
+		if (blocks->bs[r][c] &&           // If there is a block, check
+		    ((blocks->pos.col + c < 1) || // That the block is in the grid
 		     // And that the block at the left in the grid is empty.
-		     grid[f_blocks->pos.row + r][f_blocks->pos.col + c - 1]))
+		     grid[blocks->pos.row + r][blocks->pos.col + c - 1]))
 		    return(0);
-	f_blocks->pos.col--;
+	blocks->pos.col--;
 	break;
     case RIGHT:
-	for (r = 0; r < f_blocks->rows; r++)
-	    for (c = 0; c < f_blocks->cols; c++)
-		if (f_blocks->bs[r][c] &&
-		    ((f_blocks->pos.col + c >= GRID_COLS - 1) ||
-		     grid[f_blocks->pos.row + r][f_blocks->pos.col + c + 1]))
+	for (r = 0; r < blocks->rows; r++)
+	    for (c = 0; c < blocks->cols; c++)
+		if (blocks->bs[r][c] &&
+		    ((blocks->pos.col + c >= GRID_COLS - 1) ||
+		     grid[blocks->pos.row + r][blocks->pos.col + c + 1]))
 		    return(0);
-	f_blocks->pos.col++;
+	blocks->pos.col++;
 	break;
     case UP:
 	// Don't think I'll ever use that...
 	break;
     case DOWN:
-	for (r = 0; r < f_blocks->rows; r++)
-	    for (c = 0; c < f_blocks->cols; c++)
-		if (f_blocks->bs[r][c] &&
-		    ((f_blocks->pos.row + r >= GRID_ROWS - 1) ||
-		     grid[f_blocks->pos.row + r + 1][f_blocks->pos.col + c]))
+	for (r = 0; r < blocks->rows; r++)
+	    for (c = 0; c < blocks->cols; c++)
+		if (blocks->bs[r][c] &&
+		    ((blocks->pos.row + r >= GRID_ROWS - 1) ||
+		     grid[blocks->pos.row + r + 1][blocks->pos.col + c]))
 		    return(0);
-	f_blocks->pos.row++;
+	blocks->pos.row++;
 	break;
     default:
 	break;
@@ -116,90 +116,112 @@ move_blocks(int grid[GRID_ROWS][GRID_COLS],
 }
 
 void
-drop_blocks(int grid[GRID_ROWS][GRID_COLS])
+drop_blocks(int grid[GRID_ROWS][GRID_COLS],
+	    free_blocks *blocks)
 {
-    while (move_blocks(grid, a_blocks, DOWN))
+    while (move_blocks(grid, blocks, DOWN))
 	;
 }
 
 void
-generate_a_blocks(free_blocks *f_blocks,
+generate_a_blocks(free_blocks *blocks,
 		  int new_block)
 {
     // Empty the array
-    memset(f_blocks->bs, 0, sizeof(f_blocks->bs));
+    memset(blocks->bs, 0, sizeof(blocks->bs));
 
-    f_blocks->pos.row = 0;
-    f_blocks->pos.col = 0;
+    blocks->pos.row = 0;
+    blocks->pos.col = 0;
 
+    blocks->type = new_block;
     // Tetrominoes...
     switch(new_block)
     {
     case I:
-	f_blocks->rows = 1;
-	f_blocks->cols = 4;
-	f_blocks->color = CYAN;
-	f_blocks->bs[0][0] = 1;
-	f_blocks->bs[0][1] = 1;
-	f_blocks->bs[0][2] = 1;
-	f_blocks->bs[0][3] = 1;
+	blocks->rows = 1;
+	blocks->cols = 4;
+	blocks->color = CYAN;
+	blocks->bs[0][0] = 1;
+	blocks->bs[0][1] = 1;
+	blocks->bs[0][2] = 1;
+	blocks->bs[0][3] = 1;
 	break;
     case J:
-	f_blocks->rows = 2;
-	f_blocks->cols = 3;
-	f_blocks->color = BLUE;
-	f_blocks->bs[0][0] = 1;
-	f_blocks->bs[0][1] = 1;
-	f_blocks->bs[0][2] = 1;
-	f_blocks->bs[1][2] = 1;
+	blocks->rows = 2;
+	blocks->cols = 3;
+	blocks->color = BLUE;
+	blocks->bs[0][0] = 1;
+	blocks->bs[0][1] = 1;
+	blocks->bs[0][2] = 1;
+	blocks->bs[1][2] = 1;
 	break;
     case L:
-	f_blocks->rows = 2;
-	f_blocks->cols = 3;
-	f_blocks->color = ORANGE;
-	f_blocks->bs[0][0] = 1;
-	f_blocks->bs[1][0] = 1;
-	f_blocks->bs[0][1] = 1;
-	f_blocks->bs[0][2] = 1;
+	blocks->rows = 2;
+	blocks->cols = 3;
+	blocks->color = ORANGE;
+	blocks->bs[0][0] = 1;
+	blocks->bs[1][0] = 1;
+	blocks->bs[0][1] = 1;
+	blocks->bs[0][2] = 1;
 	break;
     case O:
-	f_blocks->rows = 2;
-	f_blocks->cols = 2;
-	f_blocks->color = YELLOW;
-	f_blocks->bs[0][0] = 1;
-	f_blocks->bs[0][1] = 1;
-	f_blocks->bs[1][0] = 1;
-	f_blocks->bs[1][1] = 1;
+	blocks->rows = 2;
+	blocks->cols = 2;
+	blocks->color = YELLOW;
+	blocks->bs[0][0] = 1;
+	blocks->bs[0][1] = 1;
+	blocks->bs[1][0] = 1;
+	blocks->bs[1][1] = 1;
 	break;
     case S:
-	f_blocks->rows = 2;
-	f_blocks->cols = 3;
-	f_blocks->color = GREEN;
-	f_blocks->bs[1][0] = 1;
-	f_blocks->bs[0][1] = 1;
-	f_blocks->bs[1][1] = 1;
-	f_blocks->bs[0][2] = 1;
+	blocks->rows = 2;
+	blocks->cols = 3;
+	blocks->color = GREEN;
+	blocks->bs[1][0] = 1;
+	blocks->bs[0][1] = 1;
+	blocks->bs[1][1] = 1;
+	blocks->bs[0][2] = 1;
 	break;
     case T:
-	f_blocks->rows = 2;
-	f_blocks->cols = 3;
-	f_blocks->color = PURPLE;
-	f_blocks->bs[0][0] = 1;
-	f_blocks->bs[0][1] = 1;
-	f_blocks->bs[1][1] = 1;
-	f_blocks->bs[0][2] = 1;
+	blocks->rows = 2;
+	blocks->cols = 3;
+	blocks->color = PURPLE;
+	blocks->bs[0][0] = 1;
+	blocks->bs[0][1] = 1;
+	blocks->bs[1][1] = 1;
+	blocks->bs[0][2] = 1;
 	break;
     case Z:
-	f_blocks->rows = 2;
-	f_blocks->cols = 3;
-	f_blocks->color = RED;
-	f_blocks->bs[0][0] = 1;
-	f_blocks->bs[0][1] = 1;
-	f_blocks->bs[1][1] = 1;
-	f_blocks->bs[1][2] = 1;
+	blocks->rows = 2;
+	blocks->cols = 3;
+	blocks->color = RED;
+	blocks->bs[0][0] = 1;
+	blocks->bs[0][1] = 1;
+	blocks->bs[1][1] = 1;
+	blocks->bs[1][2] = 1;
 	break;
     default:
 	break;
+    }
+}
+
+int
+tetro_rotations(int block)
+{
+    switch(block)
+    {
+    case I:
+    case S:
+    case Z:
+	return(2);
+    case J:
+    case L:
+    case T:
+	return(4);
+    case O:
+	return(1);
+    default:
+	return(0);
     }
 }
 
@@ -211,55 +233,42 @@ blocks_on_grid(int grid[GRID_ROWS][GRID_COLS],
     for (r = 0; r < blocks->rows; r++)
 	for (c = 0; c < blocks->cols; c++)
 	    if (blocks->bs[r][c]) // If there is a block, put it on the grid
-		grid[a_blocks->pos.row + r][blocks->pos.col + c] = a_blocks->color;
+		grid[blocks->pos.row + r][blocks->pos.col + c] = a_blocks->color;
 }
 
 int
 rotate_blocks(int grid[GRID_ROWS][GRID_COLS],
+	      free_blocks *blocks,
 	      int clockwise)
 {
     free_blocks *new_blocks = (free_blocks *) malloc(sizeof(free_blocks));
     
-    new_blocks->cols = a_blocks->rows;
-    new_blocks->rows = a_blocks->cols;
-    new_blocks->color = a_blocks->color;
-    new_blocks->pos.row = a_blocks->pos.row;
-    new_blocks->pos.col = a_blocks->pos.col + ((a_blocks->cols - a_blocks->rows) / 2);
+    new_blocks->cols = blocks->rows;
+    new_blocks->rows = blocks->cols;
+    new_blocks->color = blocks->color;
+    new_blocks->pos.row = blocks->pos.row;
+    new_blocks->pos.col = blocks->pos.col + ((blocks->cols - blocks->rows) / 2);
 
     int r, c;
     for (r = 0; r < a_blocks->rows; r++)
 	for (c = 0; c < a_blocks->cols; c++)
 	    if (clockwise)
-	    {
 		new_blocks->bs[c][new_blocks->cols - 1 - r] = a_blocks->bs[r][c];
-		// Check that there is no collision
-		if (a_blocks->bs[r][c])
-		{
-		    if (new_blocks->pos.row + new_blocks->rows - 1 - c >= GRID_ROWS ||
-			new_blocks->pos.row + new_blocks->rows - 1 - c < 0 ||
-			new_blocks->pos.col + r >= GRID_COLS ||
-			new_blocks->pos.col + r < 0 ||
-			grid[new_blocks->pos.row + new_blocks->rows - 1 - c][new_blocks->pos.col + r])
-			return(0);
-		}
-	    }
 	    else
-	    {
 		new_blocks->bs[new_blocks->rows - 1 - c][r] = a_blocks->bs[r][c];
-		// Check that there is no collision
-		if (a_blocks->bs[r][c])
-		{
-		    if (new_blocks->pos.row + c >= GRID_ROWS ||
-			new_blocks->pos.row + c < 0 ||
-			new_blocks->pos.col + new_blocks->cols - 1 - r >= GRID_COLS ||
-			new_blocks->pos.col + new_blocks->cols - 1 - r < 0 ||
-			grid[new_blocks->pos.row + c][new_blocks->pos.col + new_blocks->cols - 1 - r])
-			return(0);
-		}
 
-	    }
 
-    memcpy(a_blocks, new_blocks, sizeof(free_blocks));
+    // Check for collisions
+    for (r = 0; r < new_blocks->rows; r++)
+	for (c = 0; c < new_blocks->cols; c++)
+	    if (new_blocks->pos.row < 0 ||
+		new_blocks->pos.row + r >= GRID_ROWS ||
+		new_blocks->pos.col < 0 ||
+		new_blocks->pos.col + c >= GRID_COLS ||
+		grid[new_blocks->pos.row + r][new_blocks->pos.col + c])
+		return(0);
+
+    memcpy(blocks, new_blocks, sizeof(free_blocks));
     free(new_blocks);
 
     return(1);
@@ -373,10 +382,10 @@ game_playing(GAME_STATE *game_state,
 		break;
 	    case SDLK_a:
 	    case SDLK_UP:
-		rotate_blocks(grid, 1);
+		rotate_blocks(grid, a_blocks, 1);
 		break;
 	    case SDLK_d:
-		rotate_blocks(grid, 0);
+		rotate_blocks(grid, a_blocks, 1);
 		break;
 	    case SDLK_p:
 		*game_state = PAUSED;
@@ -387,7 +396,7 @@ game_playing(GAME_STATE *game_state,
 		return(1);
 	    case SDLK_SPACE:
 		// Drop the piece
-		drop_blocks(grid);
+		drop_blocks(grid, a_blocks);
 		drop = 1;
 		// This is to avoid flickerings and other nasty things
 		draw_game_playing(grid, a_blocks, next_a_blocks, *score, level, lines, draw_shadow);
@@ -465,6 +474,13 @@ game_playing(GAME_STATE *game_state,
 
 	    // Set the right column
 	    a_blocks->pos.col = GRID_COLS / 2 - a_blocks->cols / 2;
+
+	    // best move
+	    move best_move = get_best_move(grid, a_blocks);
+	    printf("Best move: %d steps %s, %d rotations.\n",
+		   best_move.steps,
+		   best_move.direction ? "right" : "left",
+		   best_move.rotations);
 
 	    // Check if the user has lost
 	    if (has_lost(grid))
