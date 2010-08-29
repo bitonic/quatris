@@ -90,22 +90,22 @@ get_col_transitions(int grid[GRID_ROWS][GRID_COLS],
     int transitions = 0, r;
 
     // Check cell and neighbor above...
-    for (r = GRID_ROWS - 1; r >= 0; r--)
+    for (r = 2; r < GRID_ROWS - 1; r++)
 	// If a transition from occupied to unoccupied, or
 	// from unoccupied to occupied, it's a transition.
-	if ((grid[r][c] && !grid[r - 1][c]) ||
-	    (!grid[r][c] && grid[r - 1][c]))
+	if ((grid[r][c] && !grid[r + 1][c]) ||
+	    (!grid[r][c] && grid[r + 1][c]))
 	    transitions++;
 
     // Check transition between bottom-exterior and row Y=1.
-    // (NOTE: Bottom exterior is implicitly "occupied".)
+    // (NOTE: Bottom exterior is implicitly occupied.)
 
     if (!grid[GRID_ROWS - 1][c])
 	transitions++;
 
     // Check transition between column 'mHeight' and above-exterior.
-    // (NOTE: Sky above is implicitly UN-"occupied".)
-    if (grid[0][c]) 
+    // (NOTE: Sky above is implicitly UN-occupied.)
+    if (grid[2][c]) 
 	transitions++;
 
     return(transitions);
@@ -215,7 +215,7 @@ evaluate_grid(int orig_grid[GRID_ROWS][GRID_COLS],
 
     row_transitions = 2 * (GRID_ROWS - pile_height);
     
-    for (r = 0; r < GRID_ROWS; r++)
+    for (r = 0; r < pile_height; r++)
 	row_transitions += get_row_transitions(grid, r);
 
     for (c = 0; c < GRID_COLS; c++)
@@ -225,7 +225,7 @@ evaluate_grid(int orig_grid[GRID_ROWS][GRID_COLS],
 	wells += get_wells(grid, c);
     }
 
-    rating  =  ( 0.0);
+    rating = 0.0;
     rating += -1.0 * landing_height;
     rating += (double) eroded_blocks;
     rating += -1.0 * ((double) row_transitions);
@@ -233,6 +233,15 @@ evaluate_grid(int orig_grid[GRID_ROWS][GRID_COLS],
     rating += -4.0 * ((double) buried_holes);
     rating += -1.0 * ((double) wells);
 
+    /*
+    printf("Landing height: %f\nEroded_blocks: %d\nRow Transitions: %d\nCol transitions: %d\nBuried holes: %d\nWells: %d.\n\n\n",
+	   landing_height,
+	   eroded_blocks,
+	   row_transitions,
+	   col_transitions,
+	   buried_holes,
+	   wells);
+    */
     *score = rating;
 
     free(blocks);

@@ -470,6 +470,12 @@ game_playing(GAME_STATE *game_state,
 	    // Put the blocks on the grid
 	    blocks_on_grid(grid, a_blocks);
 
+	    /*
+	    int priority;
+	    double lolscore;
+	    evaluate_grid(grid, a_blocks, &priority, &lolscore);
+	    */
+
 	    // Assign the score for the drop
 	    *score += DROP_SCORE;
 
@@ -515,7 +521,6 @@ game_playing(GAME_STATE *game_state,
 
 	    // best move
 	    best_move = get_best_move(grid, a_blocks);
-	    printf("best move: column %d, %d rotations\n", best_move.column, best_move.rotations);
 	}
 	if (enough_time)
 	{

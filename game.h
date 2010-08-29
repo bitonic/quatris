@@ -10,6 +10,7 @@
 // Defines..
 #define GRID_COLS 10
 #define GRID_ROWS 22
+#define GRID_ACTUAL_ROWS 20
 
 #define DROP_SCORE 6
 #define SCORE_SINGLE 40
