@@ -28,6 +28,8 @@ int draw_shadow = 0;
 // ai mode
 int ai_mode = 0;
 ai_move best_move;
+// super-speed mode
+int super_speed = 0;
 
 void
 init_game()
@@ -56,7 +58,7 @@ start_game(int grid[GRID_ROWS][GRID_COLS])
 
     // Reset level
     level = 0;
-
+    
     // Generate the blocks
     generate_a_blocks(a_blocks, rand() % 7);
     generate_a_blocks(next_a_blocks, rand() % 7);
@@ -382,13 +384,20 @@ game_playing(GAME_STATE *game_state,
 		return(1);
 	    case SDLK_r:
 		*game_state = SPLASHSCREEN;
-	    case SDLK_h:
+	    case SDLK_u:
 		// Toggle the shadow
 		draw_shadow = draw_shadow ? 0 : 1;
 		break;
 	    case SDLK_i:
 		// toggle the AI
 		ai_mode = ai_mode ? 0 : 1;
+		break;
+	    case SDLK_o:
+		if (ai_mode)
+		{
+		    // Toggle the super-speed mode
+		    super_speed = super_speed ? 0 : 1;
+		}
 		break;
 	    default:
 		break;
@@ -455,7 +464,10 @@ game_playing(GAME_STATE *game_state,
 
     // If the ai_mode is on, animate
     if (ai_mode)
-	execute_ai_move(grid, a_blocks, &best_move);
+    {
+	if (execute_ai_move(grid, a_blocks, &best_move))
+	    mov_down = 1;
+    }
 
     /*
       If the user is pressing the down key, if
@@ -465,6 +477,10 @@ game_playing(GAME_STATE *game_state,
     int enough_time = SDL_GetTicks() - fall_timer > fall_interval;
     if (enough_time || mov_down || drop)
     {
+	// If the mov_down was set by the AI, reset it
+	if (ai_mode)
+	    mov_down = 0;
+
 	/*
 	  If we can move down, good, if we can't, generate new
 	  active blocks.
@@ -485,7 +501,12 @@ game_playing(GAME_STATE *game_state,
 
 	    // Check if there are some complete rows, and update the score
 	    // Calculate score
-	    int cleared_lines = update_grid(grid, fpsmanager);
+	    int cleared_lines;
+	    // If we are in super speed, don't animate
+	    if (super_speed && ai_mode)
+		cleared_lines = update_grid(grid, NULL);
+	    else
+		cleared_lines = update_grid(grid, fpsmanager);
 	    lines += cleared_lines;
 	    switch(cleared_lines)
 	    {
@@ -536,6 +557,11 @@ game_playing(GAME_STATE *game_state,
 
     if (!draw_game_playing(grid, a_blocks, next_a_blocks, *score, level, lines, draw_shadow))
 	return(0);
+
+
+    // Delay, if we aren't in super speed
+    if (!super_speed)
+	SDL_framerateDelay(fpsmanager);
 
     return(1);
 }

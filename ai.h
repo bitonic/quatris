@@ -19,7 +19,7 @@ ai_move
 get_best_move(int grid[GRID_ROWS][GRID_COLS],
 	      free_blocks *a_blocks);
 
-void
+int
 execute_ai_move(int grid[GRID_ROWS][GRID_COLS],
 		free_blocks *blocks,
 		ai_move *move);

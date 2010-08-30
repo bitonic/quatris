@@ -170,6 +170,7 @@ evaluate_grid(int orig_grid[GRID_ROWS][GRID_COLS],
 	      int *priority,
 	      double *score)
 {
+   
     int grid[GRID_ROWS][GRID_COLS];
     memcpy(grid, orig_grid, sizeof(grid));
 
@@ -186,6 +187,16 @@ evaluate_grid(int orig_grid[GRID_ROWS][GRID_COLS],
     int pile_height = 0;
 
     int r, c;
+
+    // If we lost, return a BAD score
+    for (r = 0; r < 2; r++)
+	for (c = 0; c < GRID_COLS; c++)
+	    if (grid[r][c])
+	    {
+		*score = -1.0e+20;
+		*priority = 0;
+		return;
+	    }	
 
     double landing_height = 0.5 *
 	(((double) (GRID_ROWS - blocks->pos.row - blocks->rows)) +
@@ -313,7 +324,7 @@ get_best_move(int grid[GRID_ROWS][GRID_COLS],
     return(best_move);
 }
 
-void
+int
 execute_ai_move(int grid[GRID_ROWS][GRID_COLS],
 		free_blocks *blocks,
 		ai_move *move)
@@ -342,5 +353,10 @@ execute_ai_move(int grid[GRID_ROWS][GRID_COLS],
 
     // If we are done, drop
     if (move->rotations == 0 && move->column == blocks->pos.col)
+    {
 	drop_blocks(grid, blocks);
+	return(1);
+    }
+    else
+	return(0);
 }

@@ -79,6 +79,7 @@ main(int argv, char *argc[])
 
     // Start the game
     start_game(grid);
+    score = 0;
 
     // Display the splashscreen for 2 secs
     draw_splashscreen(0);
@@ -126,17 +127,18 @@ main(int argv, char *argc[])
 	    if (!game_paused(&game_state,
 			     event))
 		return(1);
+	    SDL_framerateDelay(fpsmanager);
 	    break;
 	case LOST:
 	    if (!game_lost(grid,
 			   &game_state,
 			   event))
 		return(1);
+	    SDL_framerateDelay(fpsmanager);
+	    break;
 	default:
 	    break;
 	}
-
-	SDL_framerateDelay(fpsmanager);
     }
 
     clean_up_graphics();
