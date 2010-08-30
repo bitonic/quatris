@@ -360,6 +360,24 @@ update_grid(int grid[GRID_ROWS][GRID_COLS],
     return(counter);
 }
 
+void
+add_to_score(int *score, int add)
+{
+    if (*score + add < MAX_SCORE)
+	*score += add;
+    else
+	*score = MAX_SCORE;
+}
+
+void
+add_to_lines(int *lines, int add)
+{
+    if (*lines + add < MAX_LINES)
+	*lines += add;
+    else
+	*lines = MAX_LINES;
+}
+
 int
 game_playing(GAME_STATE *game_state,
 	     SDL_Event event,
@@ -465,7 +483,9 @@ game_playing(GAME_STATE *game_state,
     // If the ai_mode is on, animate
     if (ai_mode)
     {
-	if (execute_ai_move(grid, a_blocks, &best_move))
+	// If super speed is on, set mov down so that the blocks get
+	// on the grid quickly
+	if (execute_ai_move(grid, a_blocks, &best_move) && super_speed)
 	    mov_down = 1;
     }
 
@@ -497,7 +517,7 @@ game_playing(GAME_STATE *game_state,
 	    */
 
 	    // Assign the score for the drop
-	    *score += DROP_SCORE;
+	    add_to_score(score, DROP_SCORE);
 
 	    // Check if there are some complete rows, and update the score
 	    // Calculate score
@@ -507,20 +527,20 @@ game_playing(GAME_STATE *game_state,
 		cleared_lines = update_grid(grid, NULL);
 	    else
 		cleared_lines = update_grid(grid, fpsmanager);
-	    lines += cleared_lines;
+	    add_to_lines(&lines, cleared_lines);
 	    switch(cleared_lines)
 	    {
 	    case 1:
-		*score += SCORE_SINGLE;
+		add_to_score(score, SCORE_SINGLE);
 		break;
 	    case 2:
-		*score += SCORE_DOUBLE;
+		add_to_score(score, SCORE_DOUBLE);
 		break;
 	    case 3:
-		*score += SCORE_TRIPLE;
+		add_to_score(score, SCORE_DOUBLE);
 		break;
 	    case 4:
-		*score += SCORE_TETRIS;
+		add_to_score(score, SCORE_TETRIS);
 		break;
 	    default:
 		break;

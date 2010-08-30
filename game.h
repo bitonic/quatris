@@ -17,11 +17,13 @@
 #define SCORE_DOUBLE 100
 #define SCORE_TRIPLE 300
 #define SCORE_TETRIS 1200
+#define MAX_SCORE 999999999
 
 #define FALL_INTERVAL 600
 
 #define LINES_PER_LEVEL 10
 #define MAX_LEVEL 15
+#define MAX_LINES 999999999
 
 // The game state
 typedef enum {

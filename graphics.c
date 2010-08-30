@@ -224,7 +224,7 @@ draw_game_playing(int grid[GRID_ROWS][GRID_COLS],
     }
 
     // Display the score
-    char sscore[15];
+    char sscore[10];
     sprintf(sscore, "%d", score);
     apply_surface(TTF_RenderText_Shaded(inconsolata28, sscore, font_color_white, bgr_color),
 		  NULL, SDL_GetVideoSurface(), x,
@@ -238,7 +238,7 @@ draw_game_playing(int grid[GRID_ROWS][GRID_COLS],
 		  GRID_POS_Y + 185);
 
     // Display the lines
-    char slines[15];
+    char slines[10];
     sprintf(slines, "%d", lines);
     apply_surface(TTF_RenderText_Shaded(inconsolata28, slines, font_color_white, bgr_color),
 		  NULL, SDL_GetVideoSurface(), x,
