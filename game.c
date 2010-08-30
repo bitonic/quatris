@@ -240,7 +240,7 @@ blocks_on_grid(int grid[GRID_ROWS][GRID_COLS],
     for (r = 0; r < blocks->rows; r++)
 	for (c = 0; c < blocks->cols; c++)
 	    if (blocks->bs[r][c]) // If there is a block, put it on the grid
-		grid[blocks->pos.row + r][blocks->pos.col + c] = a_blocks->color;
+		grid[blocks->pos.row + r][blocks->pos.col + c] = blocks->color;
 }
 
 int
@@ -257,12 +257,12 @@ rotate_blocks(int grid[GRID_ROWS][GRID_COLS],
     new_blocks->pos.col = blocks->pos.col + ((blocks->cols - blocks->rows) / 2);
 
     int r, c;
-    for (r = 0; r < a_blocks->rows; r++)
-	for (c = 0; c < a_blocks->cols; c++)
+    for (r = 0; r < blocks->rows; r++)
+	for (c = 0; c < blocks->cols; c++)
 	    if (clockwise)
-		new_blocks->bs[c][new_blocks->cols - 1 - r] = a_blocks->bs[r][c];
+		new_blocks->bs[c][new_blocks->cols - 1 - r] = blocks->bs[r][c];
 	    else
-		new_blocks->bs[new_blocks->rows - 1 - c][r] = a_blocks->bs[r][c];
+		new_blocks->bs[new_blocks->rows - 1 - c][r] = blocks->bs[r][c];
 
 
     // Check for collisions
@@ -332,10 +332,11 @@ update_grid(int grid[GRID_ROWS][GRID_COLS],
     }
     
     // If 1 or more row were cleared
-    if (grid_changed && fpsmanager)
+    if (grid_changed)
     {
 	// Animation
-	blink_grid(new_grid, grid, fpsmanager);
+	if (fpsmanager)
+	    blink_grid(new_grid, grid, fpsmanager);
 	
 	// Remove cleared rows, and calculate score
 	int i;
@@ -414,7 +415,7 @@ game_playing(GAME_STATE *game_state,
 		    rotate_blocks(grid, a_blocks, 1);
 		    break;
 		case SDLK_d:
-		    rotate_blocks(grid, a_blocks, 1);
+		    rotate_blocks(grid, a_blocks, 0);
 		    break;
 		case SDLK_SPACE:
 		    // Drop the piece

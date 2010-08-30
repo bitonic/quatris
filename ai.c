@@ -15,34 +15,28 @@ int
 count_eliminated_blocks(int orig_grid[GRID_ROWS][GRID_COLS],
 			free_blocks *orig_blocks)
 {
-    int grid[GRID_COLS][GRID_ROWS];
+    int grid[GRID_ROWS][GRID_COLS];
     memcpy(grid, orig_grid, sizeof(grid));
 
     free_blocks *blocks = (free_blocks *) malloc(sizeof(free_blocks));
     memcpy(blocks, orig_blocks, sizeof(free_blocks));
 
-    int eliminated_blocks = 0, r, c, completed_row;
+    int eliminated_blocks = 0, r, c;
     // Set the color to -1
     blocks->color = -1;
 
-    // Count all the -1 in completed rows
+    // Put blocks on grid
+    blocks_on_grid(grid, blocks);
+
+    // Update grid
+    update_grid(grid, NULL);
+    // Count all the -1s
+    eliminated_blocks = 4;
     for (r = 0; r < GRID_ROWS; r++)
-    {
-	completed_row = 1;
-
 	for (c = 0; c < GRID_COLS; c++)
-	    if (!grid[r][c])
-	    {
-		completed_row = 0;
-		break;
-	    }
-
-	if (completed_row)
-	    for (c = 0; c < GRID_COLS; c++)
-		if (grid[r][c] == -1)
-		    eliminated_blocks++;
-    }
-
+	    if (grid[r][c] == -1)
+		eliminated_blocks--;
+    
     return(eliminated_blocks);
 }
 
@@ -233,15 +227,6 @@ evaluate_grid(int orig_grid[GRID_ROWS][GRID_COLS],
     rating += -4.0 * ((double) buried_holes);
     rating += -1.0 * ((double) wells);
 
-    /*
-    printf("Landing height: %f\nEroded_blocks: %d\nRow Transitions: %d\nCol transitions: %d\nBuried holes: %d\nWells: %d.\n\n\n",
-	   landing_height,
-	   eroded_blocks,
-	   row_transitions,
-	   col_transitions,
-	   buried_holes,
-	   wells);
-    */
     *score = rating;
 
     free(blocks);
@@ -263,6 +248,9 @@ get_best_move(int grid[GRID_ROWS][GRID_COLS],
     double tmp_score;
     int best_priority = 0;
     int tmp_priority;
+
+    // Make a fresh copy
+    memcpy(blocks1, a_blocks, sizeof(free_blocks));
     
     int rotations;
     for (rotations = 0;
@@ -270,9 +258,8 @@ get_best_move(int grid[GRID_ROWS][GRID_COLS],
 	 rotations++)
     {
 	tmp_move.rotations = rotations;
-	// Make a fresh copy
-	memcpy(blocks1, a_blocks, sizeof(free_blocks));
 	// Rotate the block if we can. If not, break
+
 	if (rotations)
 	    if (!rotate_blocks(grid, blocks1, 1))
 		break;
