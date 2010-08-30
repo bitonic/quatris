@@ -444,7 +444,7 @@ game_playing(GAME_STATE *game_state,
     }
     
     // Level up every 10 lines
-    if (lines / LINES_PER_LEVEL + 1 > level)
+    if (lines / LINES_PER_LEVEL + 1 > level && level < MAX_LEVEL)
     {
 	level++;
 	fall_interval = FALL_INTERVAL - (FALL_INTERVAL / MAX_LEVEL * level);
