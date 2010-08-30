@@ -60,8 +60,8 @@ start_game(int grid[GRID_ROWS][GRID_COLS])
     level = 0;
     
     // Generate the blocks
-    generate_a_blocks(a_blocks, rand() % 7);
-    generate_a_blocks(next_a_blocks, rand() % 7);
+    generate_blocks(a_blocks, rand() % 7);
+    generate_blocks(next_a_blocks, rand() % 7);
 
     // Set the right column
     a_blocks->pos.col = GRID_COLS / 2 - a_blocks->cols / 2;
@@ -136,7 +136,7 @@ drop_blocks(int grid[GRID_ROWS][GRID_COLS],
 }
 
 void
-generate_a_blocks(free_blocks *blocks,
+generate_blocks(free_blocks *blocks,
 		  int new_block)
 {
     // Empty the array
@@ -218,7 +218,7 @@ generate_a_blocks(free_blocks *blocks,
 }
 
 int
-tetro_rotations(int block)
+blocks_possible_rotations(int block)
 {
     switch(block)
     {
@@ -558,11 +558,12 @@ game_playing(GAME_STATE *game_state,
 		// Animation
 		game_over(grid, fpsmanager);
 		*game_state = LOST;
+		printf("%d\n", lines);
 		return(1);
 	    }
 
 	    // Generate new blocks
-	    generate_a_blocks(next_a_blocks, rand() % 7);
+	    generate_blocks(next_a_blocks, rand() % 7);
 
 	    // best move
 	    best_move = get_best_move(grid, a_blocks);

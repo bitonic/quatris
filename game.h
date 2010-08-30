@@ -53,12 +53,12 @@ drop_blocks(int grid[GRID_ROWS][GRID_COLS],
 
 // Generate a new tetromino
 void
-generate_a_blocks(free_blocks *blocks,
-		  int new_block);
+generate_blocks(free_blocks *blocks,
+		int new_block);
 
 // Returns the number of possible orientation of a tetromino
 int
-tetro_rotations(int block);
+blocks_possible_rotations(int block);
 
 // Puts the active tetromino in the grid
 void

@@ -32,7 +32,7 @@ count_eliminated_blocks(int orig_grid[GRID_ROWS][GRID_COLS],
     update_grid(grid, NULL);
     // Count all the -1s
     eliminated_blocks = 4;
-    for (r = 0; r < GRID_ROWS; r++)
+    for (r = 2; r < GRID_ROWS; r++)
 	for (c = 0; c < GRID_COLS; c++)
 	    if (grid[r][c] == -1)
 		eliminated_blocks--;
@@ -44,7 +44,7 @@ int
 pile_max_height(int grid[GRID_ROWS][GRID_COLS])
 {
     int r, c;
-    for (r = 0; r < GRID_ROWS; r++)
+    for (r = 2; r < GRID_ROWS; r++)
 	for (c = 0; c < GRID_COLS; c++)
 	    if (grid[r][c])
 		break;
@@ -111,7 +111,7 @@ get_buried_holes(int grid[GRID_ROWS][GRID_COLS],
 {
     int enable = 0, holes = 0, r;
 
-    for (r = 0; r < GRID_ROWS; r++)
+    for (r = 2; r < GRID_ROWS; r++)
 	if (grid[r][c])
 	    enable = 1;
 	else if (enable)
@@ -143,7 +143,7 @@ get_wells(int grid[GRID_ROWS][GRID_COLS],
     int r, well_value = 0, cell_left, cell_right;
 
     
-    for (r = 0; r < GRID_ROWS; r++)
+    for (r = 2; r < GRID_ROWS; r++)
     {
 	if (c > 0)
 	    cell_left = grid[r][c - 1];
@@ -188,16 +188,6 @@ evaluate_grid(int orig_grid[GRID_ROWS][GRID_COLS],
 
     int r, c;
 
-    // If we lost, return a BAD score
-    for (r = 0; r < 2; r++)
-	for (c = 0; c < GRID_COLS; c++)
-	    if (grid[r][c])
-	    {
-		*score = -1.0e+20;
-		*priority = 0;
-		return;
-	    }	
-
     double landing_height = 0.5 *
 	(((double) (GRID_ROWS - blocks->pos.row - blocks->rows)) +
 	 ((double) (GRID_ROWS - blocks->pos.row)));
@@ -212,6 +202,15 @@ evaluate_grid(int orig_grid[GRID_ROWS][GRID_COLS],
 
     // Put the blocks on the grid
     blocks_on_grid(grid, blocks);
+
+    // If we lost, return a BAD score
+    for (r = 0; r < 2; r++)
+	for (c = 0; c < GRID_COLS; c++)
+	    if (grid[r][c])
+	    {
+		*score = -1.0e+20;
+		return;
+	    }	
     
     // Calcolate eroded blocks, updating the grid
     eroded_blocks = eliminated_blocks * update_grid(grid, NULL);
@@ -220,7 +219,7 @@ evaluate_grid(int orig_grid[GRID_ROWS][GRID_COLS],
 
     row_transitions = 2 * (GRID_ROWS - pile_height);
     
-    for (r = 0; r < pile_height; r++)
+    for (r = 2; r < pile_height; r++)
 	row_transitions += get_row_transitions(grid, r);
 
     for (c = 0; c < GRID_COLS; c++)
@@ -265,7 +264,7 @@ get_best_move(int grid[GRID_ROWS][GRID_COLS],
     
     int rotations;
     for (rotations = 0;
-	 rotations < tetro_rotations(a_blocks->type);
+	 rotations < blocks_possible_rotations(a_blocks->type);
 	 rotations++)
     {
 	tmp_move.rotations = rotations;
@@ -329,6 +328,7 @@ execute_ai_move(int grid[GRID_ROWS][GRID_COLS],
 		free_blocks *blocks,
 		ai_move *move)
 {
+    /*
     // Convert clockwise rotations to counter clockwise if necessary
     if (move->rotations > 2)
 	move->rotations -= 4;
@@ -359,4 +359,20 @@ execute_ai_move(int grid[GRID_ROWS][GRID_COLS],
     }
     else
 	return(0);
+    */
+    while (move->rotations)
+    {
+	move->rotations--;
+	rotate_blocks(grid, blocks, 1);
+    }
+
+    while (move->column != blocks->pos.col)
+	if (move->column < blocks->pos.col)
+	    move_blocks(grid, blocks, LEFT);
+	else if (move->column > blocks->pos.col)
+	    move_blocks(grid, blocks, RIGHT);
+
+    drop_blocks(grid, blocks);
+
+    return(1);
 }
