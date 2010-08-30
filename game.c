@@ -54,6 +54,9 @@ start_game(int grid[GRID_ROWS][GRID_COLS])
     // Set cleared lines to 0
     lines = 0;
 
+    // Reset level
+    level = 0;
+
     // Generate the blocks
     generate_a_blocks(a_blocks, rand() % 7);
     generate_a_blocks(next_a_blocks, rand() % 7);
