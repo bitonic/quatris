@@ -1,6 +1,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <time.h>
 #include "game.h"
 #include "graphics.h"
 #include "animations.h"
@@ -63,6 +64,9 @@ clean_up_game()
 void
 start_game(int grid[GRID_ROWS][GRID_COLS])
 {
+    // Init the random number generator
+    srand((unsigned) time(0));
+
     // Empty the grid
     int r;
     for (r = 0; r < GRID_ROWS; r++)
@@ -83,6 +87,11 @@ start_game(int grid[GRID_ROWS][GRID_COLS])
 
     // Generate best move
     best_move = get_best_move(grid, a_blocks);
+
+    // Set the default mode
+    ai_mode = 0;
+    super_speed = 0;
+    bastard_mode = 0;
 
     mov_down = 0;
     drop = 0;

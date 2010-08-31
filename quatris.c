@@ -1,5 +1,4 @@
 #include <stdlib.h>
-#include <time.h>
 #include "SDL/SDL.h"
 #include "SDL/SDL_framerate.h"
 #include "SDL/SDL_ttf.h"
@@ -60,9 +59,6 @@ init()
 
     // Set the caption
     SDL_WM_SetCaption("Tetris", NULL);
-
-    // Init the random number generator
-    srand((unsigned) time(0));
 
     // Start the framerate manager
     fpsmanager = (FPSmanager *) malloc(sizeof(FPSmanager));
