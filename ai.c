@@ -5,6 +5,7 @@
 
 #include <string.h>
 #include <stdlib.h>
+#include "SDL/SDL.h"
 #include "ai.h"
 
 // Helper functions
@@ -326,53 +327,77 @@ get_best_move(int grid[GRID_ROWS][GRID_COLS],
 int
 execute_ai_move(int grid[GRID_ROWS][GRID_COLS],
 		free_blocks *blocks,
-		ai_move *move)
+		ai_move *move,
+		int animate,
+		Uint32 *timer,
+		int level)
 {
-    /*
     // Convert clockwise rotations to counter clockwise if necessary
     if (move->rotations > 2)
 	move->rotations -= 4;
-
-    // Rotate
-    if (move->rotations > 0)
-    {
-	rotate_blocks(grid, blocks, 1);
-	move->rotations--;
-    }
-    else if (move->rotations < 0)
-    {
-	rotate_blocks(grid, blocks, 0);
-	move->rotations++;
-    }
     
-    // Move
-    if (move->column < blocks->pos.col)
-	move_blocks(grid, blocks, LEFT);
-    else if (move->column > blocks->pos.col)
-	move_blocks(grid, blocks, RIGHT);
-
-    // If we are done, drop
-    if (move->rotations == 0 && move->column == blocks->pos.col)
+    // If we have to animate, move/rotate only once
+    int interval = AI_ANIMATION_INTERVAL - AI_ANIMATION_INTERVAL / MAX_LEVEL * level;
+    if (animate && (SDL_GetTicks() - *timer > interval))
     {
+	*timer = SDL_GetTicks();
+
+	// If we are done, drop
+	if (move->rotations == 0 && move->column == blocks->pos.col)
+	{
+	    drop_blocks(grid, blocks);
+	    return(1);
+	}
+	else
+	{
+	    // Rotate
+	    if (move->rotations > 0)
+	    {
+		rotate_blocks(grid, blocks, 1);
+		move->rotations--;
+	    }
+	    else if (move->rotations < 0)
+	    {
+		rotate_blocks(grid, blocks, 0);
+		move->rotations++;
+	    }
+	    
+	    // Move
+	    if (move->column < blocks->pos.col)
+		move_blocks(grid, blocks, LEFT);
+	    else if (move->column > blocks->pos.col)
+		move_blocks(grid, blocks, RIGHT);
+	    return(0);
+	}
+	
+    }
+    else if (!animate)
+    {
+	// Else, do everything in one go
+	while (move->rotations)
+	{
+	    if (move->rotations > 0)
+	    {
+		move->rotations--;
+		rotate_blocks(grid, blocks, 1);
+	    }
+	    else
+	    {
+		move->rotations++;
+		rotate_blocks(grid, blocks, 0);
+	    }
+	}
+	
+	while (move->column != blocks->pos.col)
+	    if (move->column < blocks->pos.col)
+		move_blocks(grid, blocks, LEFT);
+	    else if (move->column > blocks->pos.col)
+		move_blocks(grid, blocks, RIGHT);
+	
 	drop_blocks(grid, blocks);
+    
 	return(1);
     }
     else
 	return(0);
-    */
-    while (move->rotations)
-    {
-	move->rotations--;
-	rotate_blocks(grid, blocks, 1);
-    }
-
-    while (move->column != blocks->pos.col)
-	if (move->column < blocks->pos.col)
-	    move_blocks(grid, blocks, LEFT);
-	else if (move->column > blocks->pos.col)
-	    move_blocks(grid, blocks, RIGHT);
-
-    drop_blocks(grid, blocks);
-
-    return(1);
 }

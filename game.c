@@ -28,6 +28,7 @@ int draw_shadow = 0;
 // ai mode
 int ai_mode = 0;
 ai_move best_move;
+Uint32 *ai_timer = NULL;
 // super-speed mode
 int super_speed = 0;
 
@@ -43,6 +44,18 @@ init_game()
     next_a_blocks = (free_blocks *) malloc(sizeof(free_blocks));
     next_a_blocks->rows = 0;
     next_a_blocks->cols = 0;
+
+    // Start the ai timer
+    ai_timer = (Uint32 *) malloc(sizeof(Uint32));
+    *ai_timer = SDL_GetTicks();
+}
+
+void
+clean_up_game()
+{
+    free(a_blocks);
+    free(next_a_blocks);
+    free(ai_timer);
 }
 
 void
@@ -477,7 +490,7 @@ game_playing(GAME_STATE *game_state,
     if (lines / LINES_PER_LEVEL + 1 > level && level < MAX_LEVEL)
     {
 	level++;
-	fall_interval = FALL_INTERVAL - (FALL_INTERVAL / MAX_LEVEL * level);
+	fall_interval = FALL_INTERVAL - (FALL_INTERVAL / MAX_LEVEL * level) + 80;
     }
 
     // If the ai_mode is on, animate
@@ -485,7 +498,13 @@ game_playing(GAME_STATE *game_state,
     {
 	// If super speed is on, set mov down so that the blocks get
 	// on the grid quickly
-	if (execute_ai_move(grid, a_blocks, &best_move) && super_speed)
+	int move_completed;
+	if (super_speed)
+	    move_completed = execute_ai_move(grid, a_blocks, &best_move, 0, NULL, level);
+	else
+	    move_completed = execute_ai_move(grid, a_blocks, &best_move, 1, ai_timer, level);
+
+	if (move_completed)
 	    mov_down = 1;
     }
 
@@ -558,7 +577,7 @@ game_playing(GAME_STATE *game_state,
 		// Animation
 		game_over(grid, fpsmanager);
 		*game_state = LOST;
-		printf("%d\n", lines);
+		printf("Game Over. Lines Cleared: %d\n", lines);
 		return(1);
 	    }
 
@@ -581,7 +600,7 @@ game_playing(GAME_STATE *game_state,
 
 
     // Delay, if we aren't in super speed
-    if (!super_speed)
+    if (!super_speed || !ai_mode)
 	SDL_framerateDelay(fpsmanager);
 
     return(1);
