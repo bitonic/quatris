@@ -222,6 +222,12 @@ draw_game_playing(int grid[GRID_ROWS][GRID_COLS],
 	//Display the next blocks
 	draw_free_blocks(next_a_blocks, SDL_GetVideoSurface(), x, GRID_POS_Y + 25);
     }
+    else
+    {
+    apply_surface(TTF_RenderText_Shaded(inconsolata28, "?", font_color_white, bgr_color),
+		  NULL, SDL_GetVideoSurface(), x,
+		  GRID_POS_Y + 25);
+    }
 
     // Display the score
     char sscore[10];

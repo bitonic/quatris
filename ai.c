@@ -401,3 +401,116 @@ execute_ai_move(int grid[GRID_ROWS][GRID_COLS],
     else
 	return(0);
 }
+
+// This function assumes that the free_blocks have 0 as a column.
+double
+get_best_move_score(int grid[GRID_ROWS][GRID_COLS],
+		    free_blocks *blocks)
+{
+    free_blocks *blocks1 = (free_blocks *) malloc(sizeof(free_blocks));
+    free_blocks *blocks2 = (free_blocks *) malloc(sizeof(free_blocks));
+    free_blocks *blocks3 = (free_blocks *) malloc(sizeof(free_blocks));
+
+    double best_score = -1.0e+20;
+    double tmp_score;
+    
+    int tmp_priority = 0; // Dummy
+
+    // Make a fresh copy
+    memcpy(blocks1, blocks, sizeof(free_blocks));
+    
+    int rotations;
+    for (rotations = 0;
+	 rotations < blocks_possible_rotations(blocks->type);
+	 rotations++)
+    {
+	// Rotate the block if we can. If not, break
+	if (rotations)
+	    if (!rotate_blocks(grid, blocks1, 1))
+		break;
+	
+	// Move right
+	memcpy(blocks2, blocks1, sizeof(free_blocks));
+	while (move_blocks(grid, blocks2, RIGHT))
+	{
+	    // Make another copy
+	    memcpy(blocks3, blocks2, sizeof(free_blocks));
+	    // Drop the block
+	    drop_blocks(grid, blocks3);
+	    // Evaluate
+	    evaluate_grid(grid, blocks3, &tmp_priority, &tmp_score);
+	    // If it's better...
+	    if (tmp_score > best_score)
+		best_score = tmp_score;
+	}
+    }
+
+    free(blocks1);
+    free(blocks2);
+    free(blocks3);
+
+    return(best_score);
+}
+
+int
+bastard_mode_blocks(int grid[GRID_ROWS][GRID_COLS])
+{
+    free_blocks *tmp_blocks = (free_blocks *) malloc(sizeof(free_blocks));
+    double blocks_scores[7];
+    int return_blocks = 0;
+
+    int i;
+    for (i = 0; i < 7; i++)
+    {
+	generate_blocks(tmp_blocks, i);
+	blocks_scores[i] = get_best_move_score(grid, tmp_blocks);
+    }
+    
+    free(tmp_blocks);
+
+    int prob = rand() % 100;
+    if (prob <= 100)
+    {
+	double tmp_score;
+	tmp_score = 1.0e+20;
+	for (i = 0; i < 7; i++)
+	    if (blocks_scores[i] < tmp_score)
+	    {
+		tmp_score = blocks_scores[i];
+		return_blocks = i;
+	    }
+	return(return_blocks);
+    }
+    else if (prob <= 85)
+    {
+	double tmp_score = 1.0e+20;
+	int tmp_return = 0;
+	for (i = 0; i < 7; i++)
+	    if (blocks_scores[i] < tmp_score)
+	    {
+		tmp_score = blocks_scores[i];
+		return_blocks = tmp_return;
+		tmp_return = i;
+	    }
+	return(return_blocks);
+    }
+    else if (prob <= 94)
+    {
+	return(rand() % 7);
+    }
+    else
+    {
+	printf("Best block\n");
+
+	
+	double tmp_score = -1.0e+20;
+	for (i = 0; i < 7; i++)
+	    if (blocks_scores[i] > tmp_score)
+	    {
+		tmp_score = blocks_scores[i];
+		return_blocks = i;
+	    }
+
+	return(return_blocks);
+    }
+}

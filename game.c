@@ -31,6 +31,8 @@ ai_move best_move;
 Uint32 *ai_timer = NULL;
 // super-speed mode
 int super_speed = 0;
+// bastard mode
+int bastard_mode = 0;
 
 void
 init_game()
@@ -150,7 +152,7 @@ drop_blocks(int grid[GRID_ROWS][GRID_COLS],
 
 void
 generate_blocks(free_blocks *blocks,
-		  int new_block)
+		int new_block)
 {
     // Empty the array
     memset(blocks->bs, 0, sizeof(blocks->bs));
@@ -430,6 +432,10 @@ game_playing(GAME_STATE *game_state,
 		    super_speed = super_speed ? 0 : 1;
 		}
 		break;
+	    case SDLK_b:
+		// toggle bastard mode
+		bastard_mode = bastard_mode ? 0 : 1;
+		break;
 	    default:
 		break;
 	    }
@@ -465,7 +471,7 @@ game_playing(GAME_STATE *game_state,
 		    drop_blocks(grid, a_blocks);
 		    drop = 1;
 		    // This is to avoid flickerings and other nasty things
-		    draw_game_playing(grid, a_blocks, next_a_blocks, *score, level, lines, draw_shadow);
+//		    draw_game_playing(grid, a_blocks, next_a_blocks, *score, level, lines, draw_shadow);
 		    break;
 		default:
 		    break;
@@ -565,8 +571,12 @@ game_playing(GAME_STATE *game_state,
 		break;
 	    }
 
-	    // Copy the blocks planned to the active blocks
-	    memcpy(a_blocks, next_a_blocks, sizeof(free_blocks));
+	    // If we are in bastard mode, generate the new blocks directly
+	    if (bastard_mode)
+		generate_blocks(a_blocks, bastard_mode_blocks(grid));
+	    else
+		// Copy the blocks planned to the active blocks
+		memcpy(a_blocks, next_a_blocks, sizeof(free_blocks));
 
 	    // Set the right column
 	    a_blocks->pos.col = GRID_COLS / 2 - a_blocks->cols / 2;
@@ -595,7 +605,13 @@ game_playing(GAME_STATE *game_state,
 	drop = 0; // set drop to 0 again
     }
 
-    if (!draw_game_playing(grid, a_blocks, next_a_blocks, *score, level, lines, draw_shadow))
+    int draw_game_success;
+    if (bastard_mode)
+	draw_game_success = draw_game_playing(grid, a_blocks, NULL, *score, level, lines, draw_shadow);
+    else
+	draw_game_success = draw_game_playing(grid, a_blocks, next_a_blocks, *score, level, lines, draw_shadow);
+
+    if (!draw_game_success)
 	return(0);
 
 

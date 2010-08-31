@@ -29,4 +29,7 @@ execute_ai_move(int grid[GRID_ROWS][GRID_COLS],
 		Uint32 *timer,
 		int level);
 
+int
+bastard_mode_blocks(int grid[GRID_ROWS][GRID_COLS]);
+
 #endif
