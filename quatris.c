@@ -138,6 +138,7 @@ main(int argv, char *argc[])
     }
 
     clean_up_graphics();
+    clean_up_game();
 
     SDL_Quit();
 

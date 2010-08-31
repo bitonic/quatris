@@ -36,8 +36,36 @@ init_game();
 void
 start_game(int grid[GRID_ROWS][GRID_COLS]);
 
+void
+clean_up_game();
+
+
+// Checks if the player has lost
+int
+has_lost(int grid[GRID_ROWS][GRID_COLS]);
+
 /*
-  GAME OPERATIONS
+  GAME STATES
+*/
+
+int
+game_playing(GAME_STATE *game_state,
+	     SDL_Event event,
+	     int grid[GRID_ROWS][GRID_COLS],
+	     int *score,
+	     FPSmanager *fpsmanager);
+
+int
+game_paused(GAME_STATE *game_state,
+	    SDL_Event event);
+
+int
+game_lost(int grid[GRID_ROWS][GRID_COLS],
+	  GAME_STATE *game_state,
+	  SDL_Event event);
+
+/*
+  BLOCKS OPERATIONS
 */
 
 // Move the blocks
@@ -70,10 +98,6 @@ rotate_blocks(int grid[GRID_ROWS][GRID_COLS],
 	      free_blocks *blocks,
 	      int clockwise);
 
-// Checks if the player has lost
-int
-has_lost(int grid[GRID_ROWS][GRID_COLS]);
-
 /*
   If there are complete rows, then it animates
   the grid and removes the rows from it.
@@ -82,32 +106,4 @@ has_lost(int grid[GRID_ROWS][GRID_COLS]);
 int
 update_grid(int grid[GRID_ROWS][GRID_COLS],
 	    FPSmanager *fpsmanager);
-
-/*
-  UTILS
-*/
-void
-copy_free_blocks(free_blocks *dest,
-		 free_blocks *src);
-
-/*
-  GAME STATES
-*/
-
-int
-game_playing(GAME_STATE *game_state,
-	     SDL_Event event,
-	     int grid[GRID_ROWS][GRID_COLS],
-	     int *score,
-	     FPSmanager *fpsmanager);
-
-int
-game_paused(GAME_STATE *game_state,
-	    SDL_Event event);
-
-int
-game_lost(int grid[GRID_ROWS][GRID_COLS],
-	  GAME_STATE *game_state,
-	  SDL_Event event);
-
 #endif
