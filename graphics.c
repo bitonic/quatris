@@ -1,6 +1,7 @@
 #include <string.h>
 #include "SDL/SDL_gfxPrimitives.h"
 #include "graphics.h"
+#include "conf.h"
 
 SDL_Color bgr_color = {0, 0, 0};
 

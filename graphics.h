@@ -6,20 +6,7 @@
 #include "SDL/SDL_ttf.h"
 #include "blocks.h"
 #include "game.h"
-
-#define SCREEN_WIDTH 530
-#define SCREEN_HEIGHT 480
-#define SCREEN_BPP 32
-
-// The length of the block side
-#define BLOCK_SIZE 20
-// The position of the grid
-#define GRID_POS_X 20
-#define GRID_POS_Y 20
-
-// Colors
-#define GRID_BGR 0x101010FF
-
+#include "conf.h"
 
 /*
   These must be in the same order as in the 

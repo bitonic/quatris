@@ -7,6 +7,9 @@
 #include <stdlib.h>
 #include "SDL/SDL.h"
 #include "ai.h"
+#include "conf.h"
+#include "game.h"
+#include "blocks.h"
 
 // Helper functions
 

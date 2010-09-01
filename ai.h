@@ -1,14 +1,13 @@
 #ifndef _ai_h
 #define _ai_h
 
-#include "game.h"
+#include "blocks.h"
+#include "conf.h"
 
 typedef struct {
     int column;
     int rotations;
 } ai_move;
-
-#define AI_ANIMATION_INTERVAL 200
 
 // Function to assign scores to the grid
 void
