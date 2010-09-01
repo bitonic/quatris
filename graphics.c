@@ -1,7 +1,6 @@
 #include <string.h>
 #include "SDL/SDL_gfxPrimitives.h"
 #include "graphics.h"
-#include "conf.h"
 
 SDL_Color bgr_color = {0, 0, 0};
 
@@ -150,8 +149,15 @@ draw_grid(int grid[GRID_ROWS][GRID_COLS],
 	  SDL_Surface *dest)
 {
     // Draw the background
+    int grid_w = GRID_COLS * BLOCK_SIZE - 1;
+    boxColor(dest, GRID_POS_X, GRID_POS_Y,
+             GRID_POS_X + grid_w,
+             GRID_POS_Y + 38,
+             0x080808FF);
+    hlineColor(dest, GRID_POS_X, GRID_POS_X + grid_w,
+               GRID_POS_Y + 39, 0xBDBDBDFF);
     boxColor(dest, GRID_POS_X, GRID_POS_Y + 40,
-	     GRID_POS_X + GRID_COLS * BLOCK_SIZE - 1,
+	     GRID_POS_X + grid_w,
 	     GRID_POS_Y + GRID_ROWS * BLOCK_SIZE - 1,
 	     GRID_BGR);
     

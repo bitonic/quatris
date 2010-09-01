@@ -37,6 +37,8 @@
 
 // Colors
 #define GRID_BGR 0x101010FF
+#define GRID_BGR_UP 0x080808FF
+#define GRID_LINE 0xBDBDBDFF
 
 /*
   ANIMATIONS

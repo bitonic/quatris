@@ -39,6 +39,9 @@ int bastard_mode = 0;
 void
 init_game()
 {
+    // Init the random number generator
+    srand((unsigned) time(0));
+
     // The interval in wich pieces fall
     fall_interval = FALL_INTERVAL;
 
@@ -65,9 +68,6 @@ clean_up_game()
 void
 start_game(int grid[GRID_ROWS][GRID_COLS])
 {
-    // Init the random number generator
-    srand((unsigned) time(0));
-
     // Empty the grid
     int r;
     for (r = 0; r < GRID_ROWS; r++)
