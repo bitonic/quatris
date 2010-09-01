@@ -1,6 +1,6 @@
 #include <stdlib.h>
 #include "SDL/SDL.h"
-#include "SDL/SDL_framerate.h"
+#include "framerate.h"
 #include "SDL/SDL_ttf.h"
 #include "game.h"
 #include "graphics.h"
@@ -12,7 +12,7 @@ SDL_Surface *screen = NULL;
 SDL_Event event;
 
 // The fps manager
-FPSmanager *fpsmanager = NULL;
+fps_manager *fpsmanager = NULL;
 
 // The game state
 GAME_STATE game_state = SPLASHSCREEN;
@@ -58,11 +58,11 @@ init()
     init_game();
 
     // Set the caption
-    SDL_WM_SetCaption("Tetris", NULL);
+    SDL_WM_SetCaption("Quatris", NULL);
 
     // Start the framerate manager
-    fpsmanager = (FPSmanager *) malloc(sizeof(FPSmanager));
-    SDL_initFramerate(fpsmanager);
+    fpsmanager = (fps_manager *) malloc(sizeof(fps_manager));
+    init_fps_manager(fpsmanager);
 
     return(1);
 }
@@ -109,7 +109,7 @@ main(int argv, char *argc[])
 
 	    draw_splashscreen(1);
 
-	    SDL_framerateDelay(fpsmanager);
+	    fps_delay(fpsmanager);
 	    break;
 	case PLAYING:
 	    if (!game_playing(&game_state,
@@ -123,14 +123,14 @@ main(int argv, char *argc[])
 	    if (!game_paused(&game_state,
 			     event))
 		return(1);
-	    SDL_framerateDelay(fpsmanager);
+	    fps_delay(fpsmanager);
 	    break;
 	case LOST:
 	    if (!game_lost(grid,
 			   &game_state,
 			   event))
 		return(1);
-	    SDL_framerateDelay(fpsmanager);
+	    fps_delay(fpsmanager);
 	    break;
 	default:
 	    break;

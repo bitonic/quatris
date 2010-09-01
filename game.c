@@ -114,7 +114,7 @@ has_lost(int grid[GRID_ROWS][GRID_COLS])
 
 int
 update_grid(int grid[GRID_ROWS][GRID_COLS],
-	    FPSmanager *fpsmanager)
+	    fps_manager *fpsmanager)
 {
     int cleared_rows[4]; // Keeps track of the complete rows
     int cleared_row, grid_changed; // Useful bools
@@ -198,7 +198,7 @@ game_playing(GAME_STATE *game_state,
 	     SDL_Event event,
 	     int grid[GRID_ROWS][GRID_COLS],
 	     int *score,
-	     FPSmanager *fpsmanager)
+	     fps_manager *fpsmanager)
 {
 
     while (SDL_PollEvent(&event))
@@ -417,7 +417,7 @@ game_playing(GAME_STATE *game_state,
 
     // Delay, if we aren't in super speed
     if (!super_speed || !ai_mode)
-	SDL_framerateDelay(fpsmanager);
+	fps_delay(fpsmanager);
 
     return(1);
 }

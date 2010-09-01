@@ -1,5 +1,4 @@
 #include <string.h>
-#include "SDL/SDL_gfxPrimitives.h"
 #include "graphics.h"
 
 SDL_Color bgr_color = {0, 0, 0};
@@ -14,6 +13,11 @@ SDL_Surface *game_bgr = NULL;
 SDL_Surface *paused = NULL;
 SDL_Surface *pressanykey = NULL;
 SDL_Surface *gameover = NULL;
+
+// Colors
+Uint32 grid_bgr;
+Uint32 grid_bgr_up;
+Uint32 grid_line;
 
 // Fonts
 TTF_Font *inconsolata15;
@@ -59,6 +63,23 @@ load_image(char *filename)
     return(optimizedImage);
 }
 
+void
+draw_rectangle(SDL_Surface *dest,
+               int x,
+               int y,
+               int w,
+               int h,
+               Uint32 color)
+{
+    SDL_Rect rect;
+    rect.x = x;
+    rect.y = y;
+    rect.w = w;
+    rect.h = h;
+    
+    SDL_FillRect(dest, &rect, color);
+}
+
 int
 init_graphics()
 {
@@ -100,6 +121,11 @@ init_graphics()
     gameover = load_image("files/gameover.png");
     if (gameover == NULL)
 	return(0);
+
+    // Colors
+    grid_bgr = SDL_MapRGB(SDL_GetVideoSurface()->format, 10, 10, 10);
+    grid_bgr_up = SDL_MapRGB(SDL_GetVideoSurface()->format, 8, 8, 8);
+    grid_line = SDL_MapRGB(SDL_GetVideoSurface()->format, 189, 189, 189);
 
     // Init fonts
 
@@ -150,16 +176,22 @@ draw_grid(int grid[GRID_ROWS][GRID_COLS],
 {
     // Draw the background
     int grid_w = GRID_COLS * BLOCK_SIZE - 1;
-    boxColor(dest, GRID_POS_X, GRID_POS_Y,
-             GRID_POS_X + grid_w,
-             GRID_POS_Y + 38,
-             0x080808FF);
-    hlineColor(dest, GRID_POS_X, GRID_POS_X + grid_w,
-               GRID_POS_Y + 39, 0xBDBDBDFF);
-    boxColor(dest, GRID_POS_X, GRID_POS_Y + 40,
-	     GRID_POS_X + grid_w,
-	     GRID_POS_Y + GRID_ROWS * BLOCK_SIZE - 1,
-	     GRID_BGR);
+    // Draw the upper part
+    draw_rectangle(dest, GRID_POS_X, GRID_POS_Y,
+                   grid_w,
+                   GRID_POS_Y + 38,
+                   grid_bgr_up);
+    // Draw the line
+    draw_rectangle(dest, GRID_POS_X,
+                   GRID_POS_Y + 39,
+                   grid_w,
+                   1,
+                   grid_line);
+    // The rest
+    draw_rectangle(dest, GRID_POS_X, GRID_POS_Y + 40,
+                   grid_w - 2,
+                   (GRID_ROWS - 2) * BLOCK_SIZE - 1,
+                   grid_bgr);
     
     int c, r;
     for (c = 0; c < GRID_COLS; c++)

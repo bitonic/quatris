@@ -33,6 +33,14 @@ apply_surface(SDL_Surface *source,
 SDL_Surface *
 load_image(char *filename);
 
+void
+draw_rectangle(SDL_Surface *dest,
+               int x,
+               int y,
+               int w,
+               int h,
+               Uint32 color);
+
 int
 init_graphics();
 

@@ -1,5 +1,5 @@
 CC_FLAGS = -D_GNU_SOURCE=1 -D_REENTRANT -I/usr/include/SDL -Wall -O2
-LD_FLAGS = -lSDL_gfx -lSDL_image -lSDL_ttf -lSDL -lpthread
+LD_FLAGS = -lSDL_image -lSDL_ttf -lSDL -lpthread
 
 SOURCES = $(wildcard *.c)
 OBJECTS = $(patsubst %.c, %.o, $(SOURCES))

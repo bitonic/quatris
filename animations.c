@@ -1,12 +1,12 @@
 #include "SDL/SDL.h"
-#include "SDL/SDL_framerate.h"
+#include "framerate.h"
 #include "graphics.h"
 #include "animations.h"
 
 void
 blink_grid(int grid1[GRID_ROWS][GRID_COLS],
 	   int grid2[GRID_ROWS][GRID_COLS],
-	   FPSmanager *fpsmanager)
+	   fps_manager *fpsmanager)
 {
     Uint32 timer, interval;
 
@@ -20,27 +20,27 @@ blink_grid(int grid1[GRID_ROWS][GRID_COLS],
     {
 	draw_grid(grid1, SDL_GetVideoSurface());
 	SDL_Flip(SDL_GetVideoSurface());
-	SDL_framerateDelay(fpsmanager);
+	fps_delay(fpsmanager);
     }
     timer = SDL_GetTicks();
     while (SDL_GetTicks() - timer < interval)
     {
 	draw_grid(grid2, SDL_GetVideoSurface());
 	SDL_Flip(SDL_GetVideoSurface());
-	SDL_framerateDelay(fpsmanager);
+	fps_delay(fpsmanager);
     }
     timer = SDL_GetTicks();
     while (SDL_GetTicks() - timer < interval)
     {
 	draw_grid(grid1, SDL_GetVideoSurface());
 	SDL_Flip(SDL_GetVideoSurface());
-	SDL_framerateDelay(fpsmanager);
+	fps_delay(fpsmanager);
     }
 }
 
 void
 game_over(int grid[GRID_ROWS][GRID_COLS],
-	  FPSmanager *fpsmanager)
+	  fps_manager *fpsmanager)
 {
     int r, c;
     for (r = GRID_ROWS - 1; r >= 0; r--)
@@ -50,7 +50,7 @@ game_over(int grid[GRID_ROWS][GRID_COLS],
 		grid[r][c] = GREY;
 	draw_grid(grid, SDL_GetVideoSurface());
 	SDL_Flip(SDL_GetVideoSurface());
-	SDL_framerateDelay(fpsmanager);
+	fps_delay(fpsmanager);
     }
 
     SDL_Delay(700);

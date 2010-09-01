@@ -3,10 +3,10 @@
 
 #include "SDL/SDL.h"
 #include "SDL/SDL_image.h"
-#include "SDL/SDL_framerate.h"
 #include "SDL/SDL_ttf.h"
 #include "blocks.h"
 #include "conf.h"
+#include "framerate.h"
 
 // The game state
 typedef enum {
@@ -37,7 +37,7 @@ has_lost(int grid[GRID_ROWS][GRID_COLS]);
 */
 int
 update_grid(int grid[GRID_ROWS][GRID_COLS],
-	    FPSmanager *fpsmanager);
+	    fps_manager *fpsmanager);
 
 
 /*
@@ -49,7 +49,7 @@ game_playing(GAME_STATE *game_state,
 	     SDL_Event event,
 	     int grid[GRID_ROWS][GRID_COLS],
 	     int *score,
-	     FPSmanager *fpsmanager);
+	     fps_manager *fpsmanager);
 
 int
 game_paused(GAME_STATE *game_state,
