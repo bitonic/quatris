@@ -471,8 +471,14 @@ bastard_mode_blocks(int grid[GRID_ROWS][GRID_COLS])
     
     free(tmp_blocks);
 
+    /*
+      70% chance of getting the worst piece
+      15% of getting the 2nd worst
+      9% of getting a random piece
+      6% of getting the best piece!
+    */
     int prob = rand() % 100;
-    if (prob <= 100)
+    if (prob <= 70)
     {
 	double tmp_score;
 	tmp_score = 1.0e+20;
@@ -503,9 +509,6 @@ bastard_mode_blocks(int grid[GRID_ROWS][GRID_COLS])
     }
     else
     {
-	printf("Best block\n");
-
-	
 	double tmp_score = -1.0e+20;
 	for (i = 0; i < 7; i++)
 	    if (blocks_scores[i] > tmp_score)
