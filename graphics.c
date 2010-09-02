@@ -20,7 +20,7 @@ Uint32 grid_bgr_up;
 Uint32 grid_line;
 
 // Fonts
-TTF_Font *inconsolata15;
+TTF_Font *inconsolata13;
 TTF_Font *inconsolata28;
 SDL_Color font_color_white = {255, 255, 255};
 SDL_Color font_color_red = {240, 20, 20};
@@ -129,8 +129,8 @@ init_graphics()
 
     // Init fonts
 
-    inconsolata15 = TTF_OpenFont("files/Inconsolata.ttf", 15);
-    if(!inconsolata15)
+    inconsolata13 = TTF_OpenFont("files/Inconsolata.ttf", 13);
+    if(!inconsolata13)
     {
 	fprintf(stderr, "Error in TTF_OpenFont: %s\n", TTF_GetError());
 	return(0);
@@ -157,7 +157,7 @@ clean_up_graphics()
     SDL_FreeSurface(pressanykey);
     SDL_FreeSurface(blocks_sprite);
 
-    TTF_CloseFont(inconsolata15);
+    TTF_CloseFont(inconsolata13);
     TTF_CloseFont(inconsolata28);
 }
 
@@ -312,6 +312,13 @@ draw_shadow_blocks(int grid[GRID_ROWS][GRID_COLS],
     free(shadow_blocks);
 }
 
+void
+write_author()
+{
+    apply_surface(TTF_RenderText_Shaded(inconsolata13, "rostayob 2010 - bitbucket.org/rostayob", font_color_white, bgr_color),
+                  NULL, SDL_GetVideoSurface(), 253, 460);
+}
+
 int 
 draw_splashscreen(int anykey)
 {
@@ -320,6 +327,8 @@ draw_splashscreen(int anykey)
     if (anykey)
 	apply_surface(pressanykey, NULL, SDL_GetVideoSurface(), 128, 150);
 	
+    write_author();
+
     if (SDL_Flip(SDL_GetVideoSurface()) == -1)
 	return(0);
     return(1);
@@ -331,6 +340,8 @@ draw_game_paused()
     apply_surface(splashscreen, NULL, SDL_GetVideoSurface(), 0, 0);
 
     apply_surface(paused, NULL, SDL_GetVideoSurface(), 315, 125);
+
+    write_author();
 
     if (SDL_Flip(SDL_GetVideoSurface()) == -1)
 	return(0);
