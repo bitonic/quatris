@@ -315,8 +315,8 @@ draw_shadow_blocks(int grid[GRID_ROWS][GRID_COLS],
 void
 write_author()
 {
-    apply_surface(TTF_RenderText_Shaded(inconsolata13, "rostayob 2010 - bitbucket.org/rostayob", font_color_white, bgr_color),
-                  NULL, SDL_GetVideoSurface(), 253, 460);
+    apply_surface(TTF_RenderText_Shaded(inconsolata13, "rostayob 2010 - github.com/rostayob", font_color_white, bgr_color),
+                  NULL, SDL_GetVideoSurface(), 270, 460);
 }
 
 int 
