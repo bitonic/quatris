@@ -4,9 +4,9 @@
 #include "SDL/SDL.h"
 
 typedef struct {
-    int fps;
-    Uint32 frame_interval;
-    Uint32 last_ticks;
+  int fps;
+  Uint32 frame_interval;
+  Uint32 last_ticks;
 } fps_manager;
 
 void
@@ -16,3 +16,4 @@ void
 fps_delay(fps_manager *);
 
 #endif
+

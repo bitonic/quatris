@@ -10,7 +10,7 @@
 
 // The game state
 typedef enum {
-    PLAYING, PAUSED, LOST, SPLASHSCREEN, QUIT
+  PLAYING, PAUSED, LOST, SPLASHSCREEN, QUIT
 } GAME_STATE;
 
 void
@@ -37,7 +37,7 @@ has_lost(int grid[GRID_ROWS][GRID_COLS]);
 */
 int
 update_grid(int grid[GRID_ROWS][GRID_COLS],
-	    fps_manager *fpsmanager);
+            fps_manager *fpsmanager);
 
 
 /*
@@ -46,18 +46,18 @@ update_grid(int grid[GRID_ROWS][GRID_COLS],
 
 int
 game_playing(GAME_STATE *game_state,
-	     SDL_Event event,
-	     int grid[GRID_ROWS][GRID_COLS],
-	     int *score,
-	     fps_manager *fpsmanager);
+             SDL_Event event,
+             int grid[GRID_ROWS][GRID_COLS],
+             int *score,
+             fps_manager *fpsmanager);
 
 int
 game_paused(GAME_STATE *game_state,
-	    SDL_Event event);
+            SDL_Event event);
 
 int
 game_lost(int grid[GRID_ROWS][GRID_COLS],
-	  GAME_STATE *game_state,
-	  SDL_Event event);
+          GAME_STATE *game_state,
+          SDL_Event event);
 
 #endif

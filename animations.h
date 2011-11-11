@@ -5,11 +5,11 @@
 
 void
 blink_grid(int grid1[GRID_ROWS][GRID_COLS],
-	   int grid2[GRID_ROWS][GRID_COLS],
-	   fps_manager *fpsmanager);
+           int grid2[GRID_ROWS][GRID_COLS],
+           fps_manager *fpsmanager);
 
 void
 game_over(int[GRID_ROWS][GRID_COLS],
-	  fps_manager *fpsmanager);
+          fps_manager *fpsmanager);
 
 #endif
