@@ -38,9 +38,9 @@ count_eliminated_blocks(int orig_grid[GRID_ROWS][GRID_COLS],
   eliminated_blocks = 4;
   for (r = 2; r < GRID_ROWS; r++)
     for (c = 0; c < GRID_COLS; c++)
-	    if (grid[r][c] == -1)
+            if (grid[r][c] == -1)
         eliminated_blocks--;
-    
+
   return(eliminated_blocks);
 }
 
@@ -50,7 +50,7 @@ pile_max_height(int grid[GRID_ROWS][GRID_COLS])
   int r, c;
   for (r = 2; r < GRID_ROWS; r++)
     for (c = 0; c < GRID_COLS; c++)
-	    if (grid[r][c])
+            if (grid[r][c])
         break;
   return(GRID_ROWS - r);
 }
@@ -66,11 +66,11 @@ get_row_transitions(int grid[GRID_ROWS][GRID_COLS],
     // from unoccupied to occupied, it's a transition.
     if ((grid[r][c] && !grid[r][c + 1]) ||
         (!grid[r][c] && grid[r][c + 1]))
-	    transitions++;
+            transitions++;
 
   // Check transition between left-exterior and column 1.
   // (NOTE: Exterior is implicitly "occupied".)
-  if (!grid[r][0]) 
+  if (!grid[r][0])
     transitions++;
 
   // Check transition between column 'mWidth' and right-exterior.
@@ -93,7 +93,7 @@ get_col_transitions(int grid[GRID_ROWS][GRID_COLS],
     // from unoccupied to occupied, it's a transition.
     if ((grid[r][c] && !grid[r + 1][c]) ||
         (!grid[r][c] && grid[r + 1][c]))
-	    transitions++;
+            transitions++;
 
   // Check transition between bottom-exterior and row Y=1.
   // (NOTE: Bottom exterior is implicitly occupied.)
@@ -103,7 +103,7 @@ get_col_transitions(int grid[GRID_ROWS][GRID_COLS],
 
   // Check transition between column 'mHeight' and above-exterior.
   // (NOTE: Sky above is implicitly UN-occupied.)
-  if (grid[2][c]) 
+  if (grid[2][c])
     transitions++;
 
   return(transitions);
@@ -117,9 +117,9 @@ get_buried_holes(int grid[GRID_ROWS][GRID_COLS],
 
   for (r = 2; r < GRID_ROWS; r++)
     if (grid[r][c])
-	    enable = 1;
+            enable = 1;
     else if (enable)
-	    holes++;
+            holes++;
 
   return holes;
 }
@@ -134,9 +134,9 @@ blanks_down(int grid[GRID_ROWS][GRID_COLS],
 
   for (r = top_r; r < GRID_ROWS; r++)
     if (grid[r][c])
-	    return(blanks);
+            return(blanks);
     else
-	    blanks++;
+            blanks++;
   return(blanks);
 }
 
@@ -146,7 +146,7 @@ get_wells(int grid[GRID_ROWS][GRID_COLS],
 {
   int r, well_value = 0, cell_left, cell_right;
 
-    
+
   for (r = 2; r < GRID_ROWS; r++)
     {
       if (c > 0)
@@ -174,7 +174,7 @@ evaluate_grid(int orig_grid[GRID_ROWS][GRID_COLS],
               int *priority,
               double *score)
 {
-   
+
   int grid[GRID_ROWS][GRID_COLS];
   memcpy(grid, orig_grid, sizeof(grid));
 
@@ -197,7 +197,7 @@ evaluate_grid(int orig_grid[GRID_ROWS][GRID_COLS],
      ((double) (GRID_ROWS - blocks->pos.row)));
 
   int eliminated_blocks = count_eliminated_blocks(grid, blocks);
-    
+
   // Calculate priority
   *priority = 0;
   *priority += 100 * abs(blocks->pos.col - (GRID_COLS / 2 - blocks->cols / 2));
@@ -210,19 +210,19 @@ evaluate_grid(int orig_grid[GRID_ROWS][GRID_COLS],
   // If we lost, return a BAD score
   for (r = 0; r < 2; r++)
     for (c = 0; c < GRID_COLS; c++)
-	    if (grid[r][c])
+            if (grid[r][c])
         {
           *score = -1.0e+20;
           return;
-        }	
-    
+        }
+
   // Calcolate eroded blocks, updating the grid
   eroded_blocks = eliminated_blocks * update_grid(grid, NULL);
 
   pile_height = pile_max_height(grid);
 
   row_transitions = 2 * (GRID_ROWS - pile_height);
-    
+
   for (r = 2; r < pile_height; r++)
     row_transitions += get_row_transitions(grid, r);
 
@@ -265,7 +265,7 @@ get_best_move(int grid[GRID_ROWS][GRID_COLS],
 
   // Make a fresh copy
   memcpy(blocks1, a_blocks, sizeof(free_blocks));
-    
+
   int rotations;
   for (rotations = 0;
        rotations < blocks_possible_rotations(a_blocks->type);
@@ -277,7 +277,7 @@ get_best_move(int grid[GRID_ROWS][GRID_COLS],
       if (rotations)
         if (!rotate_blocks(grid, blocks1, 1))
           break;
-	
+
       // Move left
       memcpy(blocks2, blocks1, sizeof(free_blocks));
       do {
@@ -338,7 +338,7 @@ execute_ai_move(int grid[GRID_ROWS][GRID_COLS],
   // Convert clockwise rotations to counter clockwise if necessary
   if (move->rotations > 2)
     move->rotations -= 4;
-    
+
   // If we have to animate, move/rotate only once
   int interval = AI_ANIMATION_INTERVAL - AI_ANIMATION_INTERVAL / MAX_LEVEL * level;
   if (animate && (SDL_GetTicks() - *timer > interval))
@@ -364,7 +364,7 @@ execute_ai_move(int grid[GRID_ROWS][GRID_COLS],
               rotate_blocks(grid, blocks, 0);
               move->rotations++;
             }
-	    
+
           // Move
           if (move->column < blocks->pos.col)
             move_blocks(grid, blocks, LEFT);
@@ -372,7 +372,7 @@ execute_ai_move(int grid[GRID_ROWS][GRID_COLS],
             move_blocks(grid, blocks, RIGHT);
           return(0);
         }
-	
+
     }
   else if (!animate)
     {
@@ -390,15 +390,15 @@ execute_ai_move(int grid[GRID_ROWS][GRID_COLS],
               rotate_blocks(grid, blocks, 0);
             }
         }
-	
+
       while (move->column != blocks->pos.col)
         if (move->column < blocks->pos.col)
           move_blocks(grid, blocks, LEFT);
         else if (move->column > blocks->pos.col)
           move_blocks(grid, blocks, RIGHT);
-	
+
       drop_blocks(grid, blocks);
-    
+
       return(1);
     }
   else
@@ -416,12 +416,12 @@ get_best_move_score(int grid[GRID_ROWS][GRID_COLS],
 
   double best_score = -1.0e+20;
   double tmp_score;
-    
+
   int tmp_priority = 0; // Dummy
 
   // Make a fresh copy
   memcpy(blocks1, blocks, sizeof(free_blocks));
-    
+
   int rotations;
   for (rotations = 0;
        rotations < blocks_possible_rotations(blocks->type);
@@ -431,7 +431,7 @@ get_best_move_score(int grid[GRID_ROWS][GRID_COLS],
       if (rotations)
         if (!rotate_blocks(grid, blocks1, 1))
           break;
-	
+
       // Move right
       memcpy(blocks2, blocks1, sizeof(free_blocks));
       while (move_blocks(grid, blocks2, RIGHT))
@@ -468,7 +468,7 @@ bastard_mode_blocks(int grid[GRID_ROWS][GRID_COLS])
       generate_blocks(tmp_blocks, i);
       blocks_scores[i] = get_best_move_score(grid, tmp_blocks);
     }
-    
+
   free(tmp_blocks);
 
   /*

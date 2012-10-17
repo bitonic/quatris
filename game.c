@@ -78,7 +78,7 @@ start_game(int grid[GRID_ROWS][GRID_COLS])
 
   // Reset level
   level = 0;
-    
+
   // Generate the blocks
   generate_blocks(a_blocks, rand() % 7);
   generate_blocks(next_a_blocks, rand() % 7);
@@ -107,7 +107,7 @@ has_lost(int grid[GRID_ROWS][GRID_COLS])
   int c, r;
   for (r = 0; r < 2; r++)
     for (c = 0; c < GRID_COLS; c++)
-	    if (grid[r][c])
+            if (grid[r][c])
         return(1);
   return(0);
 }
@@ -150,14 +150,14 @@ update_grid(int grid[GRID_ROWS][GRID_COLS],
           memset(new_grid[r], 0, sizeof(new_grid[r]));
         }
     }
-    
+
   // If 1 or more row were cleared
   if (grid_changed)
     {
       // Animation
       if (fpsmanager)
         blink_grid(new_grid, grid, fpsmanager);
-	
+
       // Remove cleared rows, and calculate score
       int i;
       score = 4;
@@ -239,7 +239,7 @@ game_playing(GAME_STATE *game_state,
             default:
               break;
             }
-	    
+
           // If we aren't in AI mode, enable the user's control
           if (!ai_mode)
             switch (event.key.keysym.sym)
@@ -271,7 +271,7 @@ game_playing(GAME_STATE *game_state,
                 drop_blocks(grid, a_blocks);
                 drop = 1;
                 // This is to avoid flickerings and other nasty things
-                //		    draw_game_playing(grid, a_blocks, next_a_blocks, *score, level, lines, draw_shadow);
+                //                  draw_game_playing(grid, a_blocks, next_a_blocks, *score, level, lines, draw_shadow);
                 break;
               default:
                 break;
@@ -291,7 +291,7 @@ game_playing(GAME_STATE *game_state,
           break;
         }
     }
-    
+
   // Level up every 10 lines
   if (lines / LINES_PER_LEVEL + 1 > level && level < MAX_LEVEL)
     {
@@ -453,7 +453,7 @@ game_lost(int grid[GRID_ROWS][GRID_COLS],
 
   //Wait
   SDL_Delay(4000);
-    
+
   *game_state = SPLASHSCREEN;
 
   // Clear events

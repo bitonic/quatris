@@ -84,7 +84,7 @@ main(int argv, char *argc[])
   // Clear events
   while(SDL_PollEvent(&event))
     if (event.type == SDL_QUIT)
-	    return(0);
+            return(0);
 
   while(game_state != QUIT)
     {

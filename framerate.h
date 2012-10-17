@@ -16,4 +16,3 @@ void
 fps_delay(fps_manager *);
 
 #endif
-

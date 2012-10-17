@@ -168,7 +168,7 @@ rotate_blocks(int grid[GRID_ROWS][GRID_COLS],
               int clockwise)
 {
   free_blocks *new_blocks = (free_blocks *) malloc(sizeof(free_blocks));
-    
+
   new_blocks->cols = blocks->rows;
   new_blocks->rows = blocks->cols;
   new_blocks->color = blocks->color;
@@ -178,16 +178,16 @@ rotate_blocks(int grid[GRID_ROWS][GRID_COLS],
   int r, c;
   for (r = 0; r < blocks->rows; r++)
     for (c = 0; c < blocks->cols; c++)
-	    if (clockwise)
+            if (clockwise)
         new_blocks->bs[c][new_blocks->cols - 1 - r] = blocks->bs[r][c];
-	    else
+            else
         new_blocks->bs[new_blocks->rows - 1 - c][r] = blocks->bs[r][c];
 
 
   // Check for collisions
   for (r = 0; r < new_blocks->rows; r++)
     for (c = 0; c < new_blocks->cols; c++)
-	    if (new_blocks->pos.row < 0 ||
+            if (new_blocks->pos.row < 0 ||
           new_blocks->pos.row + r >= GRID_ROWS ||
           new_blocks->pos.col < 0 ||
           new_blocks->pos.col + c >= GRID_COLS ||
@@ -207,6 +207,6 @@ blocks_on_grid(int grid[GRID_ROWS][GRID_COLS],
   int c, r;
   for (r = 0; r < blocks->rows; r++)
     for (c = 0; c < blocks->cols; c++)
-	    if (blocks->bs[r][c]) // If there is a block, put it on the grid
+            if (blocks->bs[r][c]) // If there is a block, put it on the grid
         grid[blocks->pos.row + r][blocks->pos.col + c] = blocks->color;
 }
