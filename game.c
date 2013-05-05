@@ -120,7 +120,6 @@ update_grid(int grid[GRID_ROWS][GRID_COLS],
   int cleared_row, grid_changed; // Useful bools
   int counter;
   int new_grid[GRID_ROWS][GRID_COLS];
-  int score = 0;
 
   // Makes a copy of the old grid to work on
   memcpy(new_grid, grid, sizeof(new_grid));
@@ -158,9 +157,8 @@ update_grid(int grid[GRID_ROWS][GRID_COLS],
       if (fpsmanager)
         blink_grid(new_grid, grid, fpsmanager);
 
-      // Remove cleared rows, and calculate score
+      // Remove cleared rows
       int i;
-      score = 4;
       for (i = 0; i < counter; i++)
         {
           // Shift the row down, starting from the cleared row
